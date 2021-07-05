@@ -1,0 +1,77 @@
+<idea-plugin>
+    <id>com.bukowiecki.regdebug</id>
+    <name>RegDebug</name>
+    <vendor email="m.bukowiecki0407@gmail.com" url="https://github.com/marcin-bukowiecki">Marcin Bukowiecki</vendor>
+
+    <description><![CDATA[
+        RegDebug extends the existing CLion C/C++ LLDB debugger by providing information about CPU registers.
+        <br>
+        Features:
+        <ul>
+            <li>Shows hex values of General Purpose, FLAGS and Floating Point Registers</li>
+            <li>Formatting hex values to decimal number</li>
+            <li>Pretty printing FLAGS register</li>
+            <li>Marking changed registers according to previous debug step</li>
+            <li>Opens Memory View according to hex value in focused register</li>
+        </ul>
+        <br>
+
+        <h4>Usage</h4>
+
+        There is zero configuration. Just launch your application in debug mode and see <code>RegDebug</code> tab
+        next to existing Debug process tabs: <code>Console</code>, <code>Debugger</code> etc.
+    ]]></description>
+
+    <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
+         on how to target different products -->
+    <depends>com.intellij.modules.platform</depends>
+    <depends>com.intellij.cidr.base</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <postStartupActivity implementation="com.bukowiecki.regdebug.listeners.ProjectOpened"/>
+    </extensions>
+    <actions>
+        <!-- Add your actions here -->
+        <group id="RegDebug.GeneralPurposeRegisters"
+               description="RegDebug general purpose registers actions"
+               text="RegDebug General Purpose Registers Actions"
+               popup="true">
+            <reference id="$Copy"/>
+        </group>
+
+        <group id="RegDebug.FloatingPointRegisters"
+               description="RegDebug floating point registers actions"
+               text="RegDebug Floating Point Registers Actions"
+               popup="true">
+            <reference id="$Copy"/>
+        </group>
+
+        <action class="com.bukowiecki.regdebug.actions.ShowMemoryViewInEditorAction"
+                description="Show Memory View in editor for given register address"
+                text="Show Memory View In Editor"
+                id="RegDebug.ShowMemoryViewInEditor">
+            <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+        </action>
+
+        <action class="com.bukowiecki.regdebug.actions.ShowMemoryViewAction"
+                description="Show Memory View for given register address"
+                text="Show Memory View"
+                id="RegDebug.ShowMemoryView">
+            <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+        </action>
+
+        <action class="com.bukowiecki.regdebug.actions.HexToIntAction"
+                description="Hex to integer"
+                text="Hex To Integer"
+                id="RegDebug.HexToInt">
+            <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+        </action>
+
+        <action class="com.bukowiecki.regdebug.actions.ToHexAction"
+                description="To hex"
+                text="To Hex"
+                id="RegDebug.ToHex">
+            <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+        </action>
+    </actions>
+</idea-plugin>
