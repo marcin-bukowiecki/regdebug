@@ -17,7 +17,7 @@ object GeneralPurposeParser {
         val space = hex.indexOfFirst { it.isWhitespace() }
         var info = ""
 
-        if (space >= 0) {
+        if (space != -1) {
             info = hex.substring(space).trim()
             hex = hex.substring(0, space)
         }
