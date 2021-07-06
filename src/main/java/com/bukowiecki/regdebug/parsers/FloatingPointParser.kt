@@ -11,16 +11,17 @@ package com.bukowiecki.regdebug.parsers
 object FloatingPointParser {
 
     fun parseRegLine(regLine: String): FloatingPointRegister {
-        val split = regLine.split("\\s+".toRegex())
+        val split = regLine.split("=")
         val register = split[0].trim()
-        val exp = split[2].trim().drop(1) // = ignored
-        val mantissa = split[3].trim().dropLast(1)
-        val info = if (split.size < 5) {
-            ""
-        } else {
-            split[4].trim()
+        val hex = split[1].trim().let { // = ignored
+            if (it.startsWith("{")) {
+                it.trim().drop(1).dropLast(1)
+            } else {
+                it
+            }
         }
-        return FloatingPointRegister(register, exp, mantissa, info)
+
+        return FloatingPointRegister(register, hex)
     }
 }
 

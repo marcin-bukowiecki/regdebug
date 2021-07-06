@@ -50,6 +50,11 @@ object FLAGSParser {
     }
 
     fun parse(content: String): List<FLAGEntry> {
+        if (content.startsWith("0x")) {
+            val l = java.lang.Long.decode(content)
+            return parse(java.lang.Long.toBinaryString(l))
+        }
+
         val reserved = content.reversed()
         val result = mutableListOf<FLAGEntry>()
 

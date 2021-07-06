@@ -11,14 +11,17 @@ package com.bukowiecki.regdebug.parsers
 object GeneralPurposeParser {
 
     fun parseRegLine(regLine: String): GeneralPurposeRegister {
-        val split = regLine.split("\\s+".toRegex())
+        val split = regLine.split("=")
         val register = split[0].trim()
-        val hex = split[2].trim() // = ignored
-        val info = if (split.size < 4) {
-            ""
-        } else {
-            split[3].trim()
+        var hex = split[1].trim()
+        val space = hex.indexOfFirst { it.isWhitespace() }
+        var info = ""
+
+        if (space >= 0) {
+            info = hex.substring(space).trim()
+            hex = hex.substring(0, space)
         }
+
         return GeneralPurposeRegister(register, hex, info)
     }
 }

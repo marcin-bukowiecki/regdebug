@@ -11,9 +11,8 @@
       <component id="cb088" class="javax.swing.JLabel" binding="registerLabel">
         <constraints>
           <grid row="0" column="0" row-span="1" col-span="1" vsize-policy="0" hsize-policy="0" anchor="8" fill="0" indent="0" use-parent-layout="false">
-            <minimum-size width="40" height="-1"/>
-            <preferred-size width="40" height="-1"/>
-            <maximum-size width="40" height="-1"/>
+            <minimum-size width="50" height="-1"/>
+            <preferred-size width="50" height="-1"/>
           </grid>
         </constraints>
         <properties>

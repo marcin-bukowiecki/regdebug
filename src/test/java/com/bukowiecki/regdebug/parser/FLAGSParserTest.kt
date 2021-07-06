@@ -31,4 +31,16 @@ class FLAGSParserTest {
         val result = FLAGSParser.parse("0b0000001000000110")
         Assert.assertEquals(listOf("PF","IF"), result.map { it.symbol })
     }
+
+    @Test
+    fun testParse_4() {
+        val result = FLAGSParser.parse("0x00000000000130a8")
+        Assert.assertEquals(listOf("SF", "IOPL", "IOPL"), result.map { it.symbol })
+    }
+
+    @Test
+    fun testParse_5() {
+        val result = FLAGSParser.parse("0x0000000000000206")
+        Assert.assertEquals(listOf("PF"), result.map { it.symbol })
+    }
 }
