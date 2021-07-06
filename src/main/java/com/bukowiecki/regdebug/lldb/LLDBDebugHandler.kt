@@ -21,7 +21,7 @@ import java.util.concurrent.TimeoutException
  */
 class LLDBDebugHandler(private val sessionTab: RegDebugSessionTab, private val driver: LLDBDriver) : DebugHandler {
 
-    private val timeout = 1L
+    private val timeout = 5L
     private var request: Protocol.CompositeRequest? = null
     private var killed = false
     private val executionId: Long = sessionTab.executionId.incrementAndGet()
