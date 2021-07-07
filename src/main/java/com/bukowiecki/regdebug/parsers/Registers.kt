@@ -44,3 +44,14 @@ data class FloatingPointRegister(override val registerName: String,
     override val registerType: RegisterType
         get() = RegisterType.FloatingPoint
 }
+
+/**
+ * @author Marcin Bukowiecki
+ */
+data class ExceptionStateRegister(override val registerName: String,
+                                  override val hex: String,
+                                  override val info: String = "") : Register {
+
+    override val registerType: RegisterType
+        get() = RegisterType.FloatingPoint
+}

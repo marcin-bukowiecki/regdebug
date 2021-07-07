@@ -6,6 +6,7 @@
 package com.bukowiecki.regdebug.lldb
 
 import com.bukowiecki.regdebug.parsers.RegistersParser
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
 import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriver
 import com.jetbrains.cidr.execution.debugger.backend.lldb.ProtobufMessageFactory
@@ -21,7 +22,7 @@ import java.util.concurrent.TimeoutException
  */
 class LLDBDebugHandler(private val sessionTab: RegDebugSessionTab, private val driver: LLDBDriver) : DebugHandler {
 
-    private val timeout = 5L
+    private val timeout = RegDebugSettings.getInstance(sessionTab.project).registersLoadingTimeout
     private var request: Protocol.CompositeRequest? = null
     private var killed = false
     private val executionId: Long = sessionTab.executionId.incrementAndGet()
@@ -53,7 +54,7 @@ class LLDBDebugHandler(private val sessionTab: RegDebugSessionTab, private val d
                         views.forEach { it.addErrorMessages(reply.err) }
                     } else {
                         val parseResult = RegistersParser.parse(reply.out)
-                        views.forEach { it.rebuildView(parseResult) }
+                         views.forEach { it.rebuildView(parseResult) }
                     }
                 }
             }

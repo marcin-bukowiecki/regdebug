@@ -10,5 +10,11 @@ package com.bukowiecki.regdebug.parsers
  */
 interface RegistersHolder<T : Register> {
 
+    val registers: List<T>
+
     fun findRegister(name: String): T?
+
+    fun isEmpty(): Boolean {
+        return registers.isEmpty()
+    }
 }

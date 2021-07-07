@@ -11,6 +11,7 @@
             <li>Shows hex values of General Purpose, FLAGS and Floating Point Registers</li>
             <li>Formatting hex values to decimal number</li>
             <li>Pretty printing FLAGS register</li>
+            <li>Filtering registers</li>
             <li>Marking changed registers according to previous debug step</li>
             <li>Opens Memory View according to hex value in focused register</li>
         </ul>
@@ -29,6 +30,13 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <postStartupActivity implementation="com.bukowiecki.regdebug.listeners.ProjectOpened"/>
+
+        <projectConfigurable parentId="tools"
+                             instance="com.bukowiecki.regdebug.settings.RegDebugConfigurable"
+                             id="com.bukowiecki.regdebug.settings.RegDebugConfigurable"
+                             displayName="RegDebug Settings"/>
+
+        <projectService serviceImplementation="com.bukowiecki.regdebug.settings.RegDebugSettings"/>
     </extensions>
     <actions>
         <!-- Add your actions here -->

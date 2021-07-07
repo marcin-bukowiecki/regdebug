@@ -15,8 +15,9 @@ object RegistersParser {
         val lines = content.lines()
         val it = lines.iterator()
 
-        var general: GeneralPurposeRegisters? = null
-        var floating: FloatingPointRegisters? = null
+        var general: GeneralPurposeRegisters = GeneralPurposeRegisters.empty
+        var floating: FloatingPointRegisters = FloatingPointRegisters.empty
+        var exceptionState: ExceptionStateRegisters = ExceptionStateRegisters.empty
 
         while (it.hasNext()) {
             val line = it.next()
@@ -38,13 +39,24 @@ object RegistersParser {
                 }
                 floating = FloatingPointRegisters(registers)
             }
+            if (line.trim() == "Exception State Registers:") {
+                val registers = mutableListOf<ExceptionStateRegister>()
+                while (it.hasNext()) {
+                    val next = it.next().trim()
+                    if (next.isEmpty()) break
+                    registers.add(ExceptionStateParser.parseRegLine(next))
+                }
+                exceptionState = ExceptionStateRegisters(registers)
+            }
         }
 
-        return ParseResult(general, floating)
+        return ParseResult(general, floating, exceptionState)
     }
 }
 
 /**
  * @author Marcin Bukowiecki
  */
-data class ParseResult(val generalPurpose: GeneralPurposeRegisters?, val floatingPoint: FloatingPointRegisters?)
+data class ParseResult(val generalPurpose: GeneralPurposeRegisters,
+                       val floatingPoint: FloatingPointRegisters,
+                       val exceptionState: ExceptionStateRegisters)

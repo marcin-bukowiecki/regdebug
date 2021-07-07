@@ -3,11 +3,15 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.ui
+package com.bukowiecki.regdebug.ui.general
 
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
+import com.bukowiecki.regdebug.ui.BaseFilterForm
+import com.bukowiecki.regdebug.ui.CellCreateProvider
+import com.bukowiecki.regdebug.ui.RegDebugView
+import com.bukowiecki.regdebug.ui.RegisterCell
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
@@ -20,40 +24,40 @@ import javax.swing.BorderFactory
 /**
  * @author Marcin Bukowiecki
  */
-class GeneralPurposeView(project: Project) : RegDebugView(project), Disposable {
+class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegisters>(project), Disposable {
 
-    private lateinit var generalPurposeRegisters: GeneralPurposeRegisters
+    private lateinit var myGeneralPurposeRegisters: GeneralPurposeRegisters
 
-    private val flagsForm = FlagsCell()
+    private val myHeaderForm = GeneralPurposeRegistersHeaderForm(this)
 
     override fun rebuildView(parseResult: ParseResult) {
-        flagsForm.headerLabel.text = "Loading registers..."
-        flagsForm.headerLabel.foreground = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultForeground
+        myHeaderForm.statusLabel.text = "Loading registers..."
+        myHeaderForm.statusLabel.foreground = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultForeground
+        super.rebuildView(parseResult)
+    }
 
-        generalPurposeRegisters = parseResult.generalPurpose ?: return
-
-        this.myMainPanel.removeAll()
-
-        if (!cellsSetup) {
-            setupCells(generalPurposeRegisters.registers)
-        }
-
-        initialize()
-        createCells(generalPurposeRegisters.registers)
-        buildCellsView()
-        addActions()
-
-        generalPurposeRegisters.findFlagsRegister()?.let {
+    override fun afterRebuild() {
+        myGeneralPurposeRegisters.findFlagsRegister()?.let {
             val flagsParsed = FLAGSParser.parse(it.hex)
             val content = if (flagsParsed.isEmpty()) {
                 ""
             } else {
                 flagsParsed.joinToString(", ") { entry -> entry.symbol }
             }
-            flagsForm.flagsTextField.text = content
+            myHeaderForm.flagsTextField.text = content
         }
 
-        flagsForm.headerLabel.text = ""
+        myHeaderForm.statusLabel.text = ""
+
+        cellsPanel.revalidate()
+    }
+
+    override fun extractParseResult(parseResult: ParseResult) {
+        myGeneralPurposeRegisters = parseResult.generalPurpose ?: return
+    }
+
+    override fun getRegistersHolder(): GeneralPurposeRegisters {
+        return myGeneralPurposeRegisters
     }
 
     override fun dispose() {
@@ -70,18 +74,22 @@ class GeneralPurposeView(project: Project) : RegDebugView(project), Disposable {
     }
 
     override fun addErrorMessages(message: String?) {
-        flagsForm.headerLabel.text = RegDebugBundle.message("regdebug.error", message ?: "")
+        myHeaderForm.statusLabel.text = RegDebugBundle.message("regdebug.error", message ?: "")
         val errorColor = JBColor(Color(188, 63, 60), Color(188, 63, 60))
-        flagsForm.headerLabel.foreground = errorColor
+        myHeaderForm.statusLabel.foreground = errorColor
     }
 
     override fun getActionGroupId(): String {
         return "RegDebug.GeneralPurposeRegisters"
     }
 
-    private fun initialize() {
+    override fun initialize() {
         myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        flagsForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
-        myMainPanel.add(flagsForm.mainPanel, BorderLayout.NORTH)
+        myHeaderForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
+        myMainPanel.add(myHeaderForm.mainPanel, BorderLayout.NORTH)
+    }
+
+    override fun getHeaderForm(): BaseFilterForm<GeneralPurposeRegisters> {
+        return myHeaderForm
     }
 }

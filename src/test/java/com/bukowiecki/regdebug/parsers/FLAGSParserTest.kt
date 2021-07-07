@@ -3,9 +3,8 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.parser
+package com.bukowiecki.regdebug.parsers
 
-import com.bukowiecki.regdebug.parsers.FLAGSParser
 import org.junit.Assert
 import org.junit.Test
 

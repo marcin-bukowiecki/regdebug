@@ -3,9 +3,11 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.ui;
+package com.bukowiecki.regdebug.ui.general;
 
 import com.bukowiecki.regdebug.parsers.Register;
+import com.bukowiecki.regdebug.presentation.RegisterPresentation;
+import com.bukowiecki.regdebug.ui.RegisterCellBase;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -13,17 +15,19 @@ import javax.swing.*;
 /**
  * @author Marcin Bukowiecki
  */
-public class FloatingPointRegisterCell extends RegisterCellBase {
+public class GeneralPurposeRegisterCell extends RegisterCellBase {
 
     private JPanel mainPanel;
-    private JLabel registerLabel;
     private JTextField hexTextField;
+    private JLabel registerLabel;
+    private JLabel infoLabel;
 
-    public FloatingPointRegisterCell(Register register) {
+    public GeneralPurposeRegisterCell(Register register, RegisterPresentation registerPresentation) {
         super(register);
         this.registerLabel.setText(register.getRegisterName());
         this.hexTextField.setEditable(false);
-        this.hexTextField.setText(register.getHex());
+        this.hexTextField.setText(registerPresentation.getText(register));
+        this.infoLabel.setText(register.getInfo());
     }
 
     @Override
@@ -40,10 +44,5 @@ public class FloatingPointRegisterCell extends RegisterCellBase {
     @Override
     public JLabel getRegisterLabel() {
         return registerLabel;
-    }
-
-    @Override
-    public @NotNull String getText() {
-        return hexTextField.getText();
     }
 }

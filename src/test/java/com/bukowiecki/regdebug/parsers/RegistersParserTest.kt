@@ -3,10 +3,8 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.parser
+package com.bukowiecki.regdebug.parsers
 
-import com.bukowiecki.regdebug.parsers.GeneralPurposeRegister
-import com.bukowiecki.regdebug.parsers.RegistersParser
 import org.junit.Assert
 import org.junit.Test
 
@@ -211,6 +209,19 @@ Exception State Registers:
         Assert.assertEquals(GeneralPurposeRegister(
             "r15l",
             "0x00",
-            ""), result.generalPurpose?.registers?.last())
+            ""), result.generalPurpose.registers.last())
+
+        Assert.assertEquals(ExceptionStateRegister(
+            "faultvaddr",
+            "0x00000001032061c0",
+            "untitled`main at main.cpp:7"), result.exceptionState.registers.last())
+    }
+
+    @Test
+    fun testParseSuccess3() {
+        val content = ""
+
+        val result = RegistersParser.parse(content)
+        Assert.assertNotNull(result)
     }
 }

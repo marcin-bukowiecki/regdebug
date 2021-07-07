@@ -3,10 +3,10 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.ui;
+package com.bukowiecki.regdebug.ui.exception;
 
 import com.bukowiecki.regdebug.parsers.Register;
-import com.bukowiecki.regdebug.presentation.RegisterPresentation;
+import com.bukowiecki.regdebug.ui.RegisterCellBase;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
@@ -14,19 +14,16 @@ import javax.swing.*;
 /**
  * @author Marcin Bukowiecki
  */
-public class GeneralPurposeRegisterCell extends RegisterCellBase {
-
+public class ExceptionStateRegisterCell extends RegisterCellBase {
     private JPanel mainPanel;
     private JTextField hexTextField;
     private JLabel registerLabel;
-    private JLabel infoLabel;
 
-    public GeneralPurposeRegisterCell(Register register, RegisterPresentation registerPresentation) {
+    public ExceptionStateRegisterCell(Register register) {
         super(register);
         this.registerLabel.setText(register.getRegisterName());
         this.hexTextField.setEditable(false);
-        this.hexTextField.setText(registerPresentation.getText(register));
-        this.infoLabel.setText(register.getInfo());
+        this.hexTextField.setText(register.getHex());
     }
 
     @Override

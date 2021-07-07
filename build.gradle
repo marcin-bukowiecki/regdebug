@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'com.bukowiecki.regdebug'
-version '1.0.1'
+version '1.0.2'
 
 repositories {
     mavenCentral()
@@ -26,5 +26,9 @@ intellij {
 
 patchPluginXml {
     changeNotes """
-      <em>Fix plugin startup on mac</em>"""
+      <em>Fix plugin startup on mac</em>
+      <br>
+      <em>Added registers filter</em>
+      <br>
+      <em>Added Exception State Registers</em>"""
 }

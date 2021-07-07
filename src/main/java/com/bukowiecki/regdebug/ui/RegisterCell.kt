@@ -19,11 +19,7 @@ interface RegisterCell {
     val registerLabel: JLabel
     val mainPanel: JPanel
     val hexTextField: JTextField
-    val register: Register
-
-    fun getText(): String {
-        return hexTextField.text
-    }
+    var register: Register
 
     fun getRegisterType(): RegisterType {
         return register.registerType

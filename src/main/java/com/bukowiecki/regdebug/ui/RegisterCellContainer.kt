@@ -20,19 +20,24 @@ val backgroundColor = Color(50, 89, 61)
 /**
  * @author Marcin Bukowiecki
  */
-class RegisterCellContainer {
+class RegisterCellContainer(val myRegisterName: String) {
 
-    lateinit var cell: RegisterCell
-
-    private var text: String? = null
+    lateinit var myCell: RegisterCell
+    private var myText: String? = null
 
     var presentation: RegisterPresentation = DefaultPresentation.instance
 
     fun createCell(project: Project, register: Register, createProvider: CellCreateProvider): RegisterCell {
-        this.cell = createProvider.create(project, register, presentation)
+        this.myCell = createProvider.create(project, register, presentation)
+        this.myText = register.hex
+        return this.myCell
+    }
 
-        val registerLabel = this.cell.registerLabel
-        if (text != null && text != this.cell.getText()) {
+    fun updateCell(register: Register) {
+        myCell.register = register
+
+        val registerLabel = this.myCell.registerLabel
+        if (myText != null && myText != register.hex) {
             registerLabel.background = backgroundColor
             registerLabel.isOpaque = true
         } else {
@@ -40,27 +45,30 @@ class RegisterCellContainer {
             registerLabel.isOpaque = false
         }
         registerLabel.revalidate()
+        this.myText = register.hex
 
-        this.text = cell.getText()
-
-        return this.cell
+        refresh()
     }
 
-    fun getMainPanel(): JPanel = cell.mainPanel
+    fun getMainPanel(): JPanel = myCell.mainPanel
 
     fun getHexTextField(): JTextField {
-        return cell.hexTextField
+        return myCell.hexTextField
     }
 
     fun isFloatingPoint(): Boolean {
-        return cell.getRegisterType() == RegisterType.FloatingPoint
+        return myCell.getRegisterType() == RegisterType.FloatingPoint
     }
 
     fun refresh() {
-        cell.hexTextField.text = presentation.getText(cell.register)
+        myCell.hexTextField.text = presentation.getText(myCell.register)
     }
 
     fun getOriginalText(): String {
-        return cell.register.hex
+        return myCell.register.hex
+    }
+
+    override fun toString(): String {
+        return myRegisterName + " " + myCell.hexTextField.text
     }
 }

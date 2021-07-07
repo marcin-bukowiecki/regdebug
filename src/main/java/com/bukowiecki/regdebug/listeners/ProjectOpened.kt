@@ -5,9 +5,11 @@
 
 package com.bukowiecki.regdebug.listeners
 
-import com.bukowiecki.regdebug.ui.FloatingPointView
-import com.bukowiecki.regdebug.ui.GeneralPurposeView
+import com.bukowiecki.regdebug.settings.RegDebugSettings
+import com.bukowiecki.regdebug.ui.floating.FloatingPointView
+import com.bukowiecki.regdebug.ui.general.GeneralPurposeView
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
+import com.bukowiecki.regdebug.ui.exception.ExceptionStateView
 import com.bukowiecki.regdebug.utils.DataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -59,7 +61,14 @@ class ProjectOpened : StartupActivity {
             debugProcess.putUserData(DataKeys.sessionTab, regDebugSessionTab)
 
             regDebugSessionTab.registerGeneralPurposeView(GeneralPurposeView(project))
-            regDebugSessionTab.registerFloatingPointView(FloatingPointView(project))
+
+            if (RegDebugSettings.getInstance(project).showFloatingPointRegisters) {
+                regDebugSessionTab.registerFloatingPointView(FloatingPointView(project))
+            }
+
+            if (RegDebugSettings.getInstance(project).showExceptionStateRegisters) {
+                regDebugSessionTab.registerExceptionStateView(ExceptionStateView(project))
+            }
 
             debugProcess.session.addSessionListener(object : XDebugSessionListener {
 

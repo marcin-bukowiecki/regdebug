@@ -13,14 +13,7 @@ object FloatingPointParser {
     fun parseRegLine(regLine: String): FloatingPointRegister {
         val split = regLine.split("=")
         val register = split[0].trim()
-        val hex = split[1].trim().let { // = ignored
-            if (it.startsWith("{")) {
-                it.trim().drop(1).dropLast(1)
-            } else {
-                it
-            }
-        }
-
+        val hex = FloatingPointRegisterContentParser.parseContent(split[1])
         return FloatingPointRegister(register, hex)
     }
 }
@@ -28,9 +21,14 @@ object FloatingPointParser {
 /**
  * @author Marcin Bukowiecki
  */
-data class FloatingPointRegisters(val registers: List<FloatingPointRegister>): RegistersHolder<FloatingPointRegister> {
+data class FloatingPointRegisters(override val registers: List<FloatingPointRegister>): RegistersHolder<FloatingPointRegister> {
 
     override fun findRegister(name: String): FloatingPointRegister? {
         return registers.firstOrNull { it.registerName == name }
+    }
+
+    companion object {
+
+        val empty = FloatingPointRegisters(emptyList())
     }
 }

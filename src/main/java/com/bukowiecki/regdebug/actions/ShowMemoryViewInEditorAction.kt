@@ -6,21 +6,14 @@
 package com.bukowiecki.regdebug.actions
 
 import com.bukowiecki.regdebug.utils.DataKeys
-import com.intellij.lang.Language
 import com.intellij.openapi.actionSystem.ActionManager
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.impl.text.PsiAwareTextEditorImpl
-import com.intellij.util.ReflectionUtil
-import com.intellij.xdebugger.evaluation.EvaluationMode
 import com.intellij.xdebugger.impl.XDebuggerManagerImpl
-import com.intellij.xdebugger.impl.breakpoints.XExpressionImpl
 import com.jetbrains.cidr.execution.debugger.CidrDebugProcess
-import com.jetbrains.cidr.execution.debugger.memory.GotoAddressInputComponent
 import com.jetbrains.cidr.execution.debugger.memory.GotoAddressPanel
 import com.jetbrains.cidr.execution.debugger.memory.MemoryViewFile
-import javax.swing.JButton
-import javax.swing.SwingUtilities
 
 /**
  * @author Marcin Bukowiecki
@@ -51,27 +44,7 @@ class ShowMemoryViewInEditorAction : ShowMemoryViewActionBase() {
                     sessionTab.memoryEditorViews.add(selectedEditor)
                 }
 
-                gotoAddressPanel.components?.forEach { component ->
-                    if (component is GotoAddressInputComponent) {
-                        component.expressionInput.expression = XExpressionImpl(
-                            address,
-                            Language.findLanguageByID("ObjectiveC"), "", EvaluationMode.EXPRESSION
-                        )
-                        component.expressionInput.comboBox.putClientProperty("JComponent.outline", null as Any?)
-                        component.expressionInput.saveTextInHistory()
-
-                        val declaredField =
-                            ReflectionUtil.getDeclaredField(
-                                GotoAddressInputComponent::class.java,
-                                "evaluateButton"
-                            ) ?: return
-
-                        declaredField.isAccessible = true
-                        val btn = declaredField.get(component) as? JButton ?: return
-                        SwingUtilities.invokeLater { btn.doClick() }
-                        return
-                    }
-                }
+                handleAddressPanel(address, gotoAddressPanel)
             }
         }
     }

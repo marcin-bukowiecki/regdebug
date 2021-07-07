@@ -6,7 +6,11 @@
 package com.bukowiecki.regdebug.ui
 
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
+import com.bukowiecki.regdebug.listeners.RegDebugListener
 import com.bukowiecki.regdebug.lldb.LLDBDebugHandler
+import com.bukowiecki.regdebug.ui.exception.ExceptionStateView
+import com.bukowiecki.regdebug.ui.floating.FloatingPointView
+import com.bukowiecki.regdebug.ui.general.GeneralPurposeView
 import com.intellij.execution.ui.layout.LayoutAttractionPolicy
 import com.intellij.execution.ui.layout.LayoutViewOptions
 import com.intellij.execution.ui.layout.PlaceInGrid
@@ -18,6 +22,7 @@ import com.intellij.openapi.fileEditor.impl.text.PsiAwareTextEditorImpl
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.content.Content
 import com.intellij.util.SlowOperations
+import com.intellij.util.messages.Topic
 import com.jetbrains.cidr.execution.debugger.CidrDebugProcess
 import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriver
 import java.util.concurrent.atomic.AtomicLong
@@ -34,26 +39,41 @@ class RegDebugSessionTab(private val debugProcess: CidrDebugProcess) : Disposabl
 
     private lateinit var generalPurposeView: GeneralPurposeView
     private lateinit var floatingPointView: FloatingPointView
+    private lateinit var exceptionStateView: ExceptionStateView
 
-    val views = mutableListOf<RegDebugView>()
-    val memoryEditorViews = mutableListOf<PsiAwareTextEditorImpl>()
     private val session = debugProcess.session
 
+    val views = mutableListOf<RegDebugView<*>>()
+    val memoryEditorViews = mutableListOf<PsiAwareTextEditorImpl>()
+
     val executionId = AtomicLong()
+    val project = debugProcess.project
+
+    private val connection = project.messageBus.connect()
 
     init {
         val ui = session.ui
         ui.defaults.initTabDefaults(tabId, RegDebugBundle.message("regdebug.tab.name"), null)
-
         ui.defaults
             .initContentAttraction(GeneralPurposeRegisterContentId, LayoutViewOptions.STARTUP, LayoutAttractionPolicy.FocusOnce(false))
+
+        connection.subscribe(topic, object : RegDebugListener {
+
+            override fun rebuildView(viewClass: Class<*>) {
+                views.firstOrNull { it.javaClass == viewClass }?.let { view ->
+                    synchronized(this) {
+                        view.refreshView()
+                    }
+                }
+            }
+        })
     }
 
     fun rebuildViews() {
         ApplicationManager.getApplication().invokeLater {
             when (val driverInTests = debugProcess.driverInTests) {
                 is LLDBDriver -> {
-                    LLDBDebugHandler(this, driverInTests).handle()
+                    LLDBDebugHandler(this,  driverInTests).handle()
                 }
                 else -> {
                     if (driverInTests == null || driverInTests.javaClass.canonicalName == null) {
@@ -94,6 +114,20 @@ class RegDebugSessionTab(private val debugProcess: CidrDebugProcess) : Disposabl
         views.add(view)
     }
 
+    fun registerExceptionStateView(view: ExceptionStateView) {
+        val ui = session.ui
+        exceptionStateView = view
+        val content: Content = ui.createContent(
+            GeneralPurposeRegisterContentId,
+            view.getMainPanel(),
+            RegDebugBundle.message("regdebug.exception.state.registers"), null, null
+        )
+        content.isCloseable = false
+        ui.addContent(content, tabId, PlaceInGrid.left, false)
+        Disposer.register(session.runContentDescriptor, view)
+        views.add(view)
+    }
+
     fun beforeSessionResumed() {
         val editorManager = FileEditorManagerEx.getInstance(debugProcess.project) as FileEditorManagerEx
         val windows = editorManager.windows
@@ -121,6 +155,12 @@ class RegDebugSessionTab(private val debugProcess: CidrDebugProcess) : Disposabl
     override fun dispose() {
         generalPurposeView.dispose()
         floatingPointView.dispose()
+        connection.dispose()
         Disposer.dispose(this)
+    }
+
+    companion object {
+
+        val topic = Topic("RegDebug.Topic", RegDebugListener::class.java)
     }
 }

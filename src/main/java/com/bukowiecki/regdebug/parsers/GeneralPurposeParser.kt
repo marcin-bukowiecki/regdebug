@@ -13,15 +13,13 @@ object GeneralPurposeParser {
     fun parseRegLine(regLine: String): GeneralPurposeRegister {
         val split = regLine.split("=")
         val register = split[0].trim()
-        var hex = split[1].trim()
-        val space = hex.indexOfFirst { it.isWhitespace() }
-        var info = ""
-
-        if (space != -1) {
-            info = hex.substring(space).trim()
-            hex = hex.substring(0, space)
+        val data = GeneralPurposeRegisterContentParser.parseContent(split[1])
+        val info = if (data.size == 2) {
+            data[1]
+        } else {
+            ""
         }
-
+        val hex = data[0]
         return GeneralPurposeRegister(register, hex, info)
     }
 }
@@ -29,7 +27,7 @@ object GeneralPurposeParser {
 /**
  * @author Marcin Bukowiecki
  */
-data class GeneralPurposeRegisters(val registers: List<GeneralPurposeRegister>): RegistersHolder<GeneralPurposeRegister> {
+data class GeneralPurposeRegisters(override val registers: List<GeneralPurposeRegister>): RegistersHolder<GeneralPurposeRegister> {
 
     override fun findRegister(name: String): GeneralPurposeRegister? {
         return registers.firstOrNull { it.registerName == name }
@@ -46,5 +44,10 @@ data class GeneralPurposeRegisters(val registers: List<GeneralPurposeRegister>):
         if (flags != null) return flags
 
         return null
+    }
+
+    companion object {
+
+        val empty = GeneralPurposeRegisters(emptyList())
     }
 }
