@@ -45,4 +45,10 @@ public class GeneralPurposeRegisterCell extends RegisterCellBase {
     public JLabel getRegisterLabel() {
         return registerLabel;
     }
+
+    @Override
+    public void refresh(@NotNull RegisterPresentation presentation) {
+        super.refresh(presentation);
+        infoLabel.setText(getRegister().getInfo());
+    }
 }

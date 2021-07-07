@@ -7,6 +7,7 @@ package com.bukowiecki.regdebug.ui
 
 import com.bukowiecki.regdebug.parsers.Register
 import com.bukowiecki.regdebug.parsers.RegisterType
+import com.bukowiecki.regdebug.presentation.RegisterPresentation
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTextField
@@ -23,5 +24,9 @@ interface RegisterCell {
 
     fun getRegisterType(): RegisterType {
         return register.registerType
+    }
+
+    fun refresh(presentation: RegisterPresentation) {
+        hexTextField.text = presentation.getText(register)
     }
 }

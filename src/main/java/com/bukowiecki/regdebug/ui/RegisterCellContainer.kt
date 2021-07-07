@@ -61,7 +61,7 @@ class RegisterCellContainer(val myRegisterName: String) {
     }
 
     fun refresh() {
-        myCell.hexTextField.text = presentation.getText(myCell.register)
+        myCell.refresh(presentation)
     }
 
     fun getOriginalText(): String {
