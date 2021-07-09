@@ -29,6 +29,8 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
 
     var showExceptionStateRegisters: Boolean = true
 
+    var openOnStartup: Boolean = false
+
     var registersLoadingTimeout = 5L
 
     override fun getState(): RegDebugSettings {
@@ -41,6 +43,7 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
         this.showFloatingPointRegisters = state.showFloatingPointRegisters
         this.registersLoadingTimeout = state.registersLoadingTimeout
         this.showExceptionStateRegisters = state.showExceptionStateRegisters
+        this.openOnStartup = state.openOnStartup
     }
 
     override fun dispose() {

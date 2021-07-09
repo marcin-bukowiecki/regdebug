@@ -8,6 +8,7 @@ package com.bukowiecki.regdebug.ui
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
 import com.bukowiecki.regdebug.listeners.RegDebugListener
 import com.bukowiecki.regdebug.lldb.LLDBDebugHandler
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.exception.ExceptionStateView
 import com.bukowiecki.regdebug.ui.floating.FloatingPointView
 import com.bukowiecki.regdebug.ui.general.GeneralPurposeView
@@ -54,8 +55,11 @@ class RegDebugSessionTab(private val debugProcess: CidrDebugProcess) : Disposabl
     init {
         val ui = session.ui
         ui.defaults.initTabDefaults(tabId, RegDebugBundle.message("regdebug.tab.name"), null)
-        ui.defaults
-            .initContentAttraction(GeneralPurposeRegisterContentId, LayoutViewOptions.STARTUP, LayoutAttractionPolicy.FocusOnce(false))
+
+        if (RegDebugSettings.getInstance(project).openOnStartup) {
+            ui.defaults
+                .initContentAttraction(GeneralPurposeRegisterContentId, LayoutViewOptions.STARTUP, LayoutAttractionPolicy.FocusOnce(false))
+        }
 
         connection.subscribe(topic, object : RegDebugListener {
 

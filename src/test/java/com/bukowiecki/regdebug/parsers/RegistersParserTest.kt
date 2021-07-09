@@ -62,7 +62,7 @@ class RegistersParserTest {
         Assert.assertEquals(GeneralPurposeRegister(
             "eflags",
             "0b0000000000000000000000000000000000000000000000000000001000000110",
-            ""), result.generalPurpose?.registers?.last())
+            ""), result.generalPurpose.registers.last())
     }
 
     @Test
