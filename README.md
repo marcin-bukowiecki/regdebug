@@ -1,6 +1,6 @@
 # RegDebug plugin
 
-RegDebug extends the existing CLion C/C++ LLDB debugger by providing information about CPU registers.
+RegDebug extends the existing CLion C/C++ LLDB and GDB debugger by providing information about CPU registers.
 
 Features:
 <ul>
