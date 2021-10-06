@@ -3,12 +3,14 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.parsers
+package com.bukowiecki.regdebug.parsers.lldb
+
+import com.bukowiecki.regdebug.parsers.*
 
 /**
  * @author Marcin Bukowiecki
  */
-object RegistersParser {
+object LLDBRegistersParser {
 
     @Suppress("ControlFlowWithEmptyBody")
     fun parse(content: String): ParseResult {
@@ -16,7 +18,7 @@ object RegistersParser {
         val it = lines.iterator()
 
         var general: GeneralPurposeRegisters = GeneralPurposeRegisters.empty
-        var floating: FloatingPointRegisters = FloatingPointRegisters.empty
+        var floating = FloatingPointRegisters.empty
         var exceptionState: ExceptionStateRegisters = ExceptionStateRegisters.empty
 
         while (it.hasNext()) {
@@ -26,7 +28,7 @@ object RegistersParser {
                 while (it.hasNext()) {
                     val next = it.next().trim()
                     if (next.isEmpty()) break
-                    registers.add(GeneralPurposeParser.parseRegLine(next))
+                    registers.add(LLDBGeneralPurposeParser.parseRegLine(next))
                 }
                 general = GeneralPurposeRegisters(registers)
             }
@@ -35,7 +37,7 @@ object RegistersParser {
                 while (it.hasNext()) {
                     val next = it.next().trim()
                     if (next.isEmpty()) break
-                    registers.add(FloatingPointParser.parseRegLine(next))
+                    registers.add(LLDBFloatingPointParser.parseRegLine(next))
                 }
                 floating = FloatingPointRegisters(registers)
             }
@@ -54,9 +56,3 @@ object RegistersParser {
     }
 }
 
-/**
- * @author Marcin Bukowiecki
- */
-data class ParseResult(val generalPurpose: GeneralPurposeRegisters,
-                       val floatingPoint: FloatingPointRegisters,
-                       val exceptionState: ExceptionStateRegisters)

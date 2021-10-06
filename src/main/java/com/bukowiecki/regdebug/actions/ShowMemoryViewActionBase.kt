@@ -33,7 +33,7 @@ abstract class ShowMemoryViewActionBase : AnAction() {
         val project = e.project ?: return false
 
         val data = e.getData(DataKeys.registerCellContainer)
-        if (data == null || data.isFloatingPoint() || getAddress(e) == null) {
+        if (data == null || data.isFloatingPoint() || data.isExceptionState() || getAddress(e) == null) {
             return false
         }
 

@@ -53,7 +53,7 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
     }
 
     override fun extractParseResult(parseResult: ParseResult) {
-        myGeneralPurposeRegisters = parseResult.generalPurpose ?: return
+        myGeneralPurposeRegisters = parseResult.generalPurpose
     }
 
     override fun getRegistersHolder(): GeneralPurposeRegisters {

@@ -5,9 +5,7 @@
 
 package com.bukowiecki.regdebug.ui.floating
 
-import com.bukowiecki.regdebug.parsers.FloatingPointRegisters
-import com.bukowiecki.regdebug.parsers.ParseResult
-import com.bukowiecki.regdebug.parsers.Register
+import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
 import com.bukowiecki.regdebug.ui.BaseFilterForm
 import com.bukowiecki.regdebug.ui.CellCreateProvider
@@ -33,7 +31,7 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
     }
 
     override fun extractParseResult(parseResult: ParseResult) {
-        myFloatingPointRegisters = parseResult.floatingPoint ?: return
+        myFloatingPointRegisters = parseResult.floatingPoint
     }
 
     override fun getCellCreateProvider(): CellCreateProvider {
@@ -49,6 +47,10 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
         return "RegDebug.FloatingPointRegisters"
     }
 
+    override fun getHeaderForm(): BaseFilterForm<FloatingPointRegisters> {
+        return myHeaderForm
+    }
+
     override fun initialize() {
         myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
         myHeaderForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
@@ -57,9 +59,5 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
 
     override fun dispose() {
         Disposer.dispose(this)
-    }
-
-    override fun getHeaderForm(): BaseFilterForm<FloatingPointRegisters> {
-        return myHeaderForm
     }
 }

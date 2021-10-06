@@ -3,12 +3,13 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.lldb
+package com.bukowiecki.regdebug.backend
 
 /**
  * @author Marcin Bukowiecki
  */
-interface DebugHandler {
+enum class BackendType {
 
-    fun handle()
+    lldb,
+    gdb
 }

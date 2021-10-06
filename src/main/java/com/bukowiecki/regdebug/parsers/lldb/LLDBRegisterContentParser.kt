@@ -3,12 +3,12 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.parsers
+package com.bukowiecki.regdebug.parsers.lldb
 
 /**
  * @author Marcin Bukowiecki
  */
-object GeneralPurposeRegisterContentParser {
+object LLDBGeneralPurposeRegisterContentParser {
 
     fun parseContent(content: String): List<String> {
         val contentTrimmed = content.trim()
@@ -27,7 +27,7 @@ object GeneralPurposeRegisterContentParser {
 /**
  * @author Marcin Bukowiecki
  */
-object FloatingPointRegisterContentParser {
+object LLDBFloatingPointRegisterContentParser {
 
     fun parseContent(content: String): String {
         return content.trim().let {
@@ -43,7 +43,7 @@ object FloatingPointRegisterContentParser {
 /**
  * @author Marcin Bukowiecki
  */
-object ExceptionStateRegisterContentParser {
+object LLDBExceptionStateRegisterContentParser {
 
-    fun parseContent(content: String): List<String> = GeneralPurposeRegisterContentParser.parseContent(content)
+    fun parseContent(content: String): List<String> = LLDBGeneralPurposeRegisterContentParser.parseContent(content)
 }

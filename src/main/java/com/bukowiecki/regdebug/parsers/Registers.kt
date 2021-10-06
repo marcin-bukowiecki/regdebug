@@ -10,7 +10,9 @@ package com.bukowiecki.regdebug.parsers
  */
 enum class RegisterType {
     GeneralPurpose,
-    FloatingPoint
+    FloatingPoint,
+    ExceptionState,
+    Other
 }
 
 /**
@@ -48,10 +50,22 @@ data class FloatingPointRegister(override val registerName: String,
 /**
  * @author Marcin Bukowiecki
  */
+data class OtherRegister(override val registerName: String,
+                         override val hex: String,
+                         override val info: String = "") : Register {
+
+    override val registerType: RegisterType
+        get() = RegisterType.Other
+}
+
+
+/**
+ * @author Marcin Bukowiecki
+ */
 data class ExceptionStateRegister(override val registerName: String,
                                   override val hex: String,
                                   override val info: String = "") : Register {
 
     override val registerType: RegisterType
-        get() = RegisterType.FloatingPoint
+        get() = RegisterType.ExceptionState
 }

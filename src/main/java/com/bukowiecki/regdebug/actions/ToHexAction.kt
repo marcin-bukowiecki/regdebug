@@ -35,13 +35,9 @@ class ToHexAction : AnAction() {
 
     private fun isEnabled(e: AnActionEvent): Boolean {
         e.project ?: return false
-
         val registerCellContainer = getRegisterCellContainer(e) ?: return false
-
         if (registerCellContainer.presentation is DefaultPresentation) return false
-
-        if (registerCellContainer.isFloatingPoint()) return false
-
+        if (registerCellContainer.isFloatingPoint() || registerCellContainer.isExceptionState()) return false
         return true
     }
 }

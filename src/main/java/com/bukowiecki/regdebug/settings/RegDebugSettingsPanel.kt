@@ -21,6 +21,7 @@ class RegDebugSettingsPanel {
     val registersLoadingTimeout = JBTextField()
     val showFloatingPointRegisters = JBCheckBox()
     val showExceptionStateRegisters = JBCheckBox()
+    val showOtherRegisters = JBCheckBox()
     val openOnStartup = JBCheckBox()
 
     init {
@@ -35,6 +36,10 @@ class RegDebugSettingsPanel {
             )
             .addLabeledComponent(
                 JBLabel(RegDebugBundle.message("regdebug.settings.showExceptionState")), showExceptionStateRegisters,
+                1, false
+            )
+            .addLabeledComponent(
+                JBLabel(RegDebugBundle.message("regdebug.settings.showOtherRegisters")), showOtherRegisters,
                 1, false
             )
             .addLabeledComponent(

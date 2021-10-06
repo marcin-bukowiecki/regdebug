@@ -8,25 +8,6 @@ package com.bukowiecki.regdebug.parsers
 /**
  * @author Marcin Bukowiecki
  */
-object GeneralPurposeParser {
-
-    fun parseRegLine(regLine: String): GeneralPurposeRegister {
-        val split = regLine.split("=")
-        val register = split[0].trim()
-        val data = GeneralPurposeRegisterContentParser.parseContent(split[1])
-        val info = if (data.size == 2) {
-            data[1]
-        } else {
-            ""
-        }
-        val hex = data[0]
-        return GeneralPurposeRegister(register, hex, info)
-    }
-}
-
-/**
- * @author Marcin Bukowiecki
- */
 data class GeneralPurposeRegisters(override val registers: List<GeneralPurposeRegister>): RegistersHolder<GeneralPurposeRegister> {
 
     override fun findRegister(name: String): GeneralPurposeRegister? {

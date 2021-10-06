@@ -12,7 +12,6 @@ import com.bukowiecki.regdebug.utils.DataKeys
 import com.intellij.ide.DataManager
 import com.intellij.openapi.actionSystem.ActionGroup
 import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.ActionPlaces
 import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.ui.PopupHandler
@@ -20,6 +19,7 @@ import com.intellij.ui.ScrollPaneFactory
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.ui.components.BorderLayoutPanel
+import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.Component
 import javax.swing.JPanel
@@ -84,12 +84,14 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
                 object : PopupHandler() {
                     override fun invokePopup(comp: Component, x: Int, y: Int) {
                         val group = actionManager.getAction(getActionGroupId()) as? ActionGroup ?: return
-                        actionManager.createActionPopupMenu(ActionPlaces.UNKNOWN, group).component.show(comp, x, y)
+                        actionManager.createActionPopupMenu(getPopupPlace(), group).component.show(comp, x, y)
                     }
                 }
             )
         }
     }
+
+    open fun getPopupPlace(): @NonNls String = getActionGroupId()
 
     fun getMainPanel(): JPanel {
         return myMainPanel
@@ -166,7 +168,6 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
     private fun getRegistersToView(): Set<String> {
         val text = getHeaderForm()?.getFilterTextField()?.text ?: return emptySet()
         if (text.isEmpty()) return emptySet()
-
         return text.split(',', ' ').map { it.trim() }.toSet()
     }
 }

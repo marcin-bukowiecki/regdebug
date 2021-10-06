@@ -10,6 +10,7 @@ import com.bukowiecki.regdebug.ui.floating.FloatingPointView
 import com.bukowiecki.regdebug.ui.general.GeneralPurposeView
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
 import com.bukowiecki.regdebug.ui.exception.ExceptionStateView
+import com.bukowiecki.regdebug.ui.other.OtherRegistersView
 import com.bukowiecki.regdebug.utils.DataKeys
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.project.Project
@@ -20,6 +21,8 @@ import com.intellij.xdebugger.XDebugSessionListener
 import com.intellij.xdebugger.XDebuggerManager
 import com.intellij.xdebugger.XDebuggerManagerListener
 import com.jetbrains.cidr.execution.debugger.CidrDebugProcess
+import com.jetbrains.cidr.execution.debugger.backend.gdb.GDBDriver
+import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriver
 
 /**
  * @author Marcin Bukowiecki
@@ -66,8 +69,15 @@ class ProjectOpened : StartupActivity {
                 regDebugSessionTab.registerFloatingPointView(FloatingPointView(project))
             }
 
-            if (RegDebugSettings.getInstance(project).showExceptionStateRegisters) {
-                regDebugSessionTab.registerExceptionStateView(ExceptionStateView(project))
+            if (debugProcess.driverInTests is LLDBDriver) {
+                if (RegDebugSettings.getInstance(project).showExceptionStateRegisters) {
+                    regDebugSessionTab.registerExceptionStateView(ExceptionStateView(project))
+                }
+            }
+            else if (debugProcess.driverInTests is GDBDriver) {
+                if (RegDebugSettings.getInstance(project).showOtherRegisters) {
+                    regDebugSessionTab.registerOtherRegistersView(OtherRegistersView(project))
+                }
             }
 
             debugProcess.session.addSessionListener(object : XDebugSessionListener {
