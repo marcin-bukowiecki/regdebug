@@ -9,7 +9,6 @@ package com.bukowiecki.regdebug.backend
  * @author Marcin Bukowiecki
  */
 enum class BackendType {
-
-    lldb,
-    gdb
+    LLDB,
+    GDB
 }

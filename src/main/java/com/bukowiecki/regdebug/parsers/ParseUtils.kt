@@ -13,8 +13,8 @@ import com.bukowiecki.regdebug.backend.BackendType
 object ParseUtils {
 
     val registerLineSeparators = mapOf(
-        BackendType.lldb to '=',
-        BackendType.gdb to ' '
+        BackendType.LLDB to '=',
+        BackendType.GDB to ' '
     )
 
     val flagsLabel = listOf(

@@ -5,7 +5,6 @@
 
 package com.bukowiecki.regdebug.parsers
 
-import com.bukowiecki.regdebug.parsers.gdb.GDBFloatingPointRegisterContentParser
 import com.bukowiecki.regdebug.parsers.lldb.LLDBFloatingPointRegisterContentParser
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -27,19 +26,5 @@ class FloatingPointRegisterContentParserTest {
         val content = " 0x00001f80 "
         val result = LLDBFloatingPointRegisterContentParser.parseContent(content)
         assertEquals("0x00001f80", result)
-    }
-
-    @Test
-    fun testParse_3() {
-        val content = " 0xffff "
-        val result = GDBFloatingPointRegisterContentParser.parseContent(content)
-        assertEquals("0xffff", result)
-    }
-
-    @Test
-    fun testParse_4() {
-        val content = "0x0 "
-        val result = GDBFloatingPointRegisterContentParser.parseContent(content)
-        assertEquals("0x0", result)
     }
 }

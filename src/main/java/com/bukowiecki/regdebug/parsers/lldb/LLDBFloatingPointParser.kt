@@ -15,7 +15,7 @@ import com.bukowiecki.regdebug.parsers.ParseUtils
 object LLDBFloatingPointParser {
 
     fun parseRegLine(regLine: String): FloatingPointRegister {
-        val split = regLine.split(ParseUtils.registerLineSeparators[BackendType.lldb]!!)
+        val split = regLine.split(ParseUtils.registerLineSeparators[BackendType.LLDB]!!)
         val register = split[0].trim()
         val hex = LLDBFloatingPointRegisterContentParser.parseContent(split[1])
         return FloatingPointRegister(register, hex)
