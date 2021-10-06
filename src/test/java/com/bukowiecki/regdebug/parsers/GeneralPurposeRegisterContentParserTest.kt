@@ -5,6 +5,7 @@
 
 package com.bukowiecki.regdebug.parsers
 
+import com.bukowiecki.regdebug.parsers.lldb.LLDBGeneralPurposeRegisterContentParser
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -15,19 +16,19 @@ class GeneralPurposeRegisterContentParserTest {
 
     @Test
     fun testParse_1() {
-        val result = GeneralPurposeRegisterContentParser.parseContent("0x0000000000000000")
+        val result = LLDBGeneralPurposeRegisterContentParser.parseContent("0x0000000000000000")
         assertEquals(listOf("0x0000000000000000"), result)
     }
 
     @Test
     fun testParse_2() {
-        val result = GeneralPurposeRegisterContentParser.parseContent("0x0000000000000000  foo bar ")
+        val result = LLDBGeneralPurposeRegisterContentParser.parseContent("0x0000000000000000  foo bar ")
         assertEquals(listOf("0x0000000000000000", "foo bar"), result)
     }
 
     @Test
     fun testParse_3() {
-        val result = GeneralPurposeRegisterContentParser.parseContent(" 0x00007ff9efd14080  std::basic_ostream<char,std::char_traits<char> > std::cout ")
+        val result = LLDBGeneralPurposeRegisterContentParser.parseContent(" 0x00007ff9efd14080  std::basic_ostream<char,std::char_traits<char> > std::cout ")
         assertEquals(listOf("0x00007ff9efd14080", "std::basic_ostream<char,std::char_traits<char> > std::cout"), result)
     }
 }

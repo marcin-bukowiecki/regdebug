@@ -25,9 +25,13 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
 
     var floatingRegistersToSelect: String = ""
 
+    var otherRegistersToSelect: String = ""
+
     var showFloatingPointRegisters: Boolean = true
 
     var showExceptionStateRegisters: Boolean = true
+
+    var showOtherRegisters: Boolean = true
 
     var openOnStartup: Boolean = false
 
@@ -43,7 +47,9 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
         this.showFloatingPointRegisters = state.showFloatingPointRegisters
         this.registersLoadingTimeout = state.registersLoadingTimeout
         this.showExceptionStateRegisters = state.showExceptionStateRegisters
+        this.showOtherRegisters = state.showOtherRegisters
         this.openOnStartup = state.openOnStartup
+        this.otherRegistersToSelect = state.otherRegistersToSelect
     }
 
     override fun dispose() {

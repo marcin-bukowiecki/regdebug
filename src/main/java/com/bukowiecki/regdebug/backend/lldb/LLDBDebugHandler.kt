@@ -3,14 +3,13 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.lldb
+package com.bukowiecki.regdebug.backend.lldb
 
-import com.bukowiecki.regdebug.parsers.RegistersParser
-import com.bukowiecki.regdebug.settings.RegDebugSettings
+import com.bukowiecki.regdebug.backend.BaseDebugHandler
+import com.bukowiecki.regdebug.parsers.lldb.LLDBRegistersParser
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
 import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriver
 import com.jetbrains.cidr.execution.debugger.backend.lldb.ProtobufMessageFactory
-import com.jetbrains.cidr.execution.debugger.backend.lldb.auto_generated.Protocol
 import com.jetbrains.cidr.execution.debugger.backend.lldb.auto_generated.ProtocolResponses
 import java.util.concurrent.CompletableFuture
 import java.util.concurrent.ExecutionException
@@ -20,16 +19,14 @@ import java.util.concurrent.TimeoutException
 /**
  * @author Marcin Bukowiecki
  */
-class LLDBDebugHandler(private val sessionTab: RegDebugSessionTab, private val driver: LLDBDriver) : DebugHandler {
+class LLDBDebugHandler(sessionTab: RegDebugSessionTab,
+                       private val driver: LLDBDriver) : BaseDebugHandler(sessionTab) {
 
-    private val timeout = RegDebugSettings.getInstance(sessionTab.project).registersLoadingTimeout
-    private var request: Protocol.CompositeRequest? = null
-    private var killed = false
-    private val executionId: Long = sessionTab.executionId.incrementAndGet()
+    private val command = "register read --all"
 
     override fun handle() {
         val views = sessionTab.views
-        val request = ProtobufMessageFactory.handleConsoleCommand(-1, -1, "register read --all")
+        val request = ProtobufMessageFactory.handleConsoleCommand(-1, -1, command)
         this.request = request
 
         val reply = try {
@@ -53,27 +50,11 @@ class LLDBDebugHandler(private val sessionTab: RegDebugSessionTab, private val d
                     if (reply.hasErr()) {
                         views.forEach { it.addErrorMessages(reply.err) }
                     } else {
-                        val parseResult = RegistersParser.parse(reply.out)
+                        val parseResult = LLDBRegistersParser.parse(reply.out)
                          views.forEach { it.rebuildView(parseResult) }
                     }
                 }
             }
         }
-    }
-
-    private fun handleError(e: Exception) {
-        if (sessionTab.executionId.get() == executionId) {
-            synchronized(sessionTab) {
-                if (sessionTab.executionId.get() == executionId) {
-                    kill()
-                    sessionTab.views.forEach { it.addErrorMessages(e.message) }
-                }
-            }
-        }
-    }
-
-    private fun kill() {
-        killed = true
-        request?.kill
     }
 }

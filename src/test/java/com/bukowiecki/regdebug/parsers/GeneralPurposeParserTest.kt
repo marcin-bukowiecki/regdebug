@@ -5,6 +5,7 @@
 
 package com.bukowiecki.regdebug.parsers
 
+import com.bukowiecki.regdebug.parsers.lldb.LLDBGeneralPurposeParser
 import org.junit.Assert
 import org.junit.Test
 
@@ -15,13 +16,13 @@ class GeneralPurposeParserTest {
 
     @Test
     fun testParseLine1() {
-        val result = GeneralPurposeParser.parseRegLine("gs = 0x0000000000000000")
+        val result = LLDBGeneralPurposeParser.parseRegLine("gs = 0x0000000000000000")
         Assert.assertEquals(GeneralPurposeRegister("gs", "0x0000000000000000"), result)
     }
 
     @Test
     fun testParseLine2() {
-        val result = GeneralPurposeParser.parseRegLine("gs = 0x0000000000000000 foo bar")
+        val result = LLDBGeneralPurposeParser.parseRegLine("gs = 0x0000000000000000 foo bar")
         Assert.assertEquals(GeneralPurposeRegister("gs", "0x0000000000000000", "foo bar"), result)
     }
 }

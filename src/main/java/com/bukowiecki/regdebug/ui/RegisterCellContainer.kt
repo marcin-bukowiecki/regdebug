@@ -60,6 +60,10 @@ class RegisterCellContainer(val myRegisterName: String) {
         return myCell.getRegisterType() == RegisterType.FloatingPoint
     }
 
+    fun isExceptionState(): Boolean {
+        return myCell.getRegisterType() == RegisterType.ExceptionState
+    }
+
     fun refresh() {
         myCell.refresh(presentation)
     }

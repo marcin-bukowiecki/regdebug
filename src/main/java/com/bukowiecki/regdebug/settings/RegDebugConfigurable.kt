@@ -27,6 +27,7 @@ class RegDebugConfigurable(private val project: Project) : Configurable {
         var modified: Boolean = settingsComponent?.registersLoadingTimeout?.text != settings.registersLoadingTimeout.toString()
         modified = modified || settingsComponent?.showFloatingPointRegisters?.isSelected != settings.showFloatingPointRegisters
         modified = modified || settingsComponent?.showExceptionStateRegisters?.isSelected != settings.showExceptionStateRegisters
+        modified = modified || settingsComponent?.showOtherRegisters?.isSelected != settings.showOtherRegisters
         modified = modified || settingsComponent?.openOnStartup?.isSelected != settings.openOnStartup
 
         return modified
@@ -37,6 +38,7 @@ class RegDebugConfigurable(private val project: Project) : Configurable {
         settings.registersLoadingTimeout = settingsComponent?.registersLoadingTimeout?.text?.toLong() ?: return
         settings.showFloatingPointRegisters = settingsComponent?.showFloatingPointRegisters?.isSelected ?: false
         settings.showExceptionStateRegisters = settingsComponent?.showExceptionStateRegisters?.isSelected ?: false
+        settings.showOtherRegisters = settingsComponent?.showOtherRegisters?.isSelected ?: false
         settings.openOnStartup = settingsComponent?.openOnStartup?.isSelected ?: false
     }
 
@@ -50,6 +52,7 @@ class RegDebugConfigurable(private val project: Project) : Configurable {
         settingsComponent?.registersLoadingTimeout?.text = instance.registersLoadingTimeout.toString()
         settingsComponent?.showFloatingPointRegisters?.isSelected = instance.showFloatingPointRegisters
         settingsComponent?.showExceptionStateRegisters?.isSelected = instance.showExceptionStateRegisters
+        settingsComponent?.showOtherRegisters?.isSelected = instance.showOtherRegisters
         settingsComponent?.openOnStartup?.isSelected = instance.openOnStartup
     }
 

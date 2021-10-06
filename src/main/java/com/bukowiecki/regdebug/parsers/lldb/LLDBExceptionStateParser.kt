@@ -3,7 +3,9 @@
  * Use of this source code is governed by the Apache 2.0 license that can be found in the LICENSE file.
  */
 
-package com.bukowiecki.regdebug.parsers
+package com.bukowiecki.regdebug.parsers.lldb
+
+import com.bukowiecki.regdebug.parsers.ExceptionStateRegister
 
 /**
  * @author Marcin Bukowiecki
@@ -13,7 +15,7 @@ object ExceptionStateParser {
     fun parseRegLine(regLine: String): ExceptionStateRegister {
         val split = regLine.split("=")
         val register = split[0].trim()
-        val data = ExceptionStateRegisterContentParser.parseContent(split[1])
+        val data = LLDBExceptionStateRegisterContentParser.parseContent(split[1])
         val info = if (data.size == 2) {
             data[1]
         } else {
@@ -21,20 +23,5 @@ object ExceptionStateParser {
         }
         val hex = data[0]
         return ExceptionStateRegister(register, hex, info)
-    }
-}
-
-/**
- * @author Marcin Bukowiecki
- */
-data class ExceptionStateRegisters(override val registers: List<ExceptionStateRegister>): RegistersHolder<ExceptionStateRegister> {
-
-    override fun findRegister(name: String): ExceptionStateRegister? {
-        return registers.firstOrNull { it.registerName == name }
-    }
-
-    companion object {
-
-        val empty = ExceptionStateRegisters(emptyList())
     }
 }

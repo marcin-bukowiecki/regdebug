@@ -5,6 +5,8 @@
 
 package com.bukowiecki.regdebug.parsers
 
+import com.bukowiecki.regdebug.parsers.gdb.GDBRegistersParser
+import com.bukowiecki.regdebug.parsers.lldb.LLDBRegistersParser
 import org.junit.Assert
 import org.junit.Test
 
@@ -57,12 +59,38 @@ class RegistersParserTest {
 
         """.trimIndent()
 
-        val result = RegistersParser.parse(content)
+        val result = LLDBRegistersParser.parse(content)
         Assert.assertNotNull(result)
         Assert.assertEquals(GeneralPurposeRegister(
             "eflags",
             "0b0000000000000000000000000000000000000000000000000000001000000110",
             ""), result.generalPurpose.registers.last())
+    }
+
+    //GDB
+    @Test
+    fun testParseSuccess2() {
+        val floatGroup = """
+            st0            0                   (raw 0x00000000000000000000)
+            st1            0                   (raw 0x00000000000000000000)
+            st2            0                   (raw 0x00000000000000000000)
+            st3            0                   (raw 0x00000000000000000000)
+            st4            0                   (raw 0x00000000000000000000)
+            st5            0                   (raw 0x00000000000000000000)
+            st6            0                   (raw 0x00000000000000000000)
+            st7            0                   (raw 0x00000000000000000000)
+            fctrl          0x37f               895
+            fstat          0x0                 0
+            ftag           0xffff              65535
+            fiseg          0x0                 0
+            fioff          0x0                 0
+            foseg          0x0                 0
+            fooff          0x0                 0
+            fop            0x0                 0
+        """.trimIndent()
+
+        val result = GDBRegistersParser.parseFloatingPointRegisters(floatGroup)
+
     }
 
     @Test
@@ -204,7 +232,7 @@ Exception State Registers:
 
         """.trimIndent()
 
-        val result = RegistersParser.parse(content)
+        val result = LLDBRegistersParser.parse(content)
         Assert.assertNotNull(result)
         Assert.assertEquals(GeneralPurposeRegister(
             "r15l",
@@ -221,7 +249,7 @@ Exception State Registers:
     fun testParseSuccess3() {
         val content = ""
 
-        val result = RegistersParser.parse(content)
+        val result = LLDBRegistersParser.parse(content)
         Assert.assertNotNull(result)
     }
 }

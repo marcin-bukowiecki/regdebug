@@ -10,45 +10,6 @@ package com.bukowiecki.regdebug.parsers
  */
 object FLAGSParser {
 
-    private val labels = listOf(
-        FLAGEntry("CF", FLAGCategory.S),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("PF", FLAGCategory.S),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("AF", FLAGCategory.S),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("ZF", FLAGCategory.S),
-        FLAGEntry("SF", FLAGCategory.S),
-        FLAGEntry("TF", FLAGCategory.X),
-        FLAGEntry("IF", FLAGCategory.X),
-        FLAGEntry("DF", FLAGCategory.C),
-        FLAGEntry("OF", FLAGCategory.S),
-        FLAGEntry("IOPL", FLAGCategory.X),
-        FLAGEntry("IOPL", FLAGCategory.X),
-        FLAGEntry("NT", FLAGCategory.X),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("RF", FLAGCategory.X),
-        FLAGEntry("VM", FLAGCategory.X),
-        FLAGEntry("AC", FLAGCategory.X),
-        FLAGEntry("VIF", FLAGCategory.X),
-        FLAGEntry("VIP", FLAGCategory.X),
-        FLAGEntry("ID", FLAGCategory.X),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-        FLAGEntry("", FLAGCategory.Reserved),
-    )
-
-    init {
-        assert(labels.size == 32) { "Should be 32 was: ${labels.size}" }
-    }
-
     fun parse(content: String): List<FLAGEntry> {
         if (content.startsWith("0x")) {
             val l = java.lang.Long.decode(content)
@@ -58,7 +19,7 @@ object FLAGSParser {
         val reserved = content.reversed()
         val result = mutableListOf<FLAGEntry>()
 
-        labels.forEachIndexed { index, s ->
+        ParseUtils.flagsLabel.forEachIndexed { index, s ->
             if (index >= content.length - 2) { //ignore 0b prefix
                 return@forEachIndexed
             }
@@ -74,6 +35,9 @@ object FLAGSParser {
     }
 }
 
+/**
+ * @author Marcin Bukowiecki
+ */
 enum class FLAGCategory {
     S,
     X,
@@ -81,4 +45,7 @@ enum class FLAGCategory {
     Reserved;
 }
 
+/**
+ * @author Marcin Bukowiecki
+ */
 data class FLAGEntry(val symbol: String, val category: FLAGCategory)

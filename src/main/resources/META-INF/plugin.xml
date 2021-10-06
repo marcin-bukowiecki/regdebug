@@ -4,7 +4,7 @@
     <vendor email="m.bukowiecki0407@gmail.com" url="https://github.com/marcin-bukowiecki">Marcin Bukowiecki</vendor>
 
     <description><![CDATA[
-        RegDebug extends the existing CLion C/C++ LLDB debugger by providing information about CPU registers.
+        RegDebug extends the existing CLion C/C++ LLDB and GDB debugger by providing information about CPU registers.
         <br>
         Features:
         <ul>
