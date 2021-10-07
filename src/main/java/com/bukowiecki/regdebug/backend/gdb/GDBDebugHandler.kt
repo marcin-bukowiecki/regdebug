@@ -9,14 +9,18 @@ import com.bukowiecki.regdebug.backend.BaseDebugHandler
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.parsers.gdb.GDBRegistersParser
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
+import com.intellij.execution.process.mediator.util.blockingGet
+import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.cidr.execution.debugger.backend.gdb.GDBDriver
-import java.util.concurrent.CompletableFuture
-import java.util.concurrent.TimeUnit
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.withTimeout
 
 /**
  * @author Marcin Bukowiecki
  */
-class GDBDebugHandler(sessionTab: RegDebugSessionTab, private val driver: GDBDriver) : BaseDebugHandler(sessionTab) {
+class GDBDebugHandler(sessionTab: RegDebugSessionTab,
+                      private val driver: GDBDriver) : BaseDebugHandler(sessionTab) {
 
     private val getGroupsCommand = "maint print reggroups"
     private val getRegisterGroupCommand = "info registers "
@@ -26,14 +30,23 @@ class GDBDebugHandler(sessionTab: RegDebugSessionTab, private val driver: GDBDri
         var generalPurposeRegisters = GeneralPurposeRegisters.empty
         var floatingPointRegisters = FloatingPointRegisters.empty
         var otherRegistersAccumulator = emptyList<OtherRegister>()
-
-        val groupsContent = CompletableFuture.supplyAsync {
-            driver.executeInterpreterCommand(getGroupsCommand)
-        }.get(timeout, TimeUnit.SECONDS)
+        val groupsContent = runBlocking {
+            withTimeout(timeout * 1000) {
+                try {
+                    async {
+                        driver.executeInterpreterCommand(getGroupsCommand)
+                    }.blockingGet()
+                } catch (t: Throwable) {
+                    log.info("Exception while executing GDB command: $getGroupsCommand", t)
+                    handleError(t)
+                    return@withTimeout null
+                }
+            }
+        } ?: return
 
         val groups = GDBRegistersParser.parseGroups(groupsContent)
-        groups.forEach { group ->
-            val registersContent = getRegisterGroup(group)
+        for (group in groups) {
+            val registersContent = getRegisterGroup(group) ?: continue
             when(group) {
                 "general" -> {
                     generalPurposeRegisters = GDBRegistersParser.parseGeneralPurposeRegisters(registersContent)
@@ -64,9 +77,24 @@ class GDBDebugHandler(sessionTab: RegDebugSessionTab, private val driver: GDBDri
         }
     }
 
-    private fun getRegisterGroup(group: String): String {
-        return CompletableFuture.supplyAsync {
-            driver.executeInterpreterCommand(getRegisterGroupCommand + group)
-        }.get(timeout, TimeUnit.SECONDS)
+    private fun getRegisterGroup(group: String): String? {
+        return runBlocking {
+            withTimeout(timeout * 1000) {
+                try {
+                    async {
+                        driver.executeInterpreterCommand(getRegisterGroupCommand + group)
+                    }.blockingGet()
+                } catch (t: Throwable) {
+                    log.info("Exception while executing GDB group command for: $group", t)
+                    handleError(t)
+                    return@withTimeout null
+                }
+            }
+        }
+    }
+
+    companion object {
+        val log = Logger.getInstance(GDBDebugHandler::class.java)
     }
 }
+
