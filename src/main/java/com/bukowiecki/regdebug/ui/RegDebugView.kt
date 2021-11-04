@@ -16,8 +16,6 @@ import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.Project
 import com.intellij.ui.PopupHandler
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.uiDesigner.core.GridConstraints
-import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
@@ -38,12 +36,10 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
     open fun rebuildView(parseResult: ParseResult) {
         extractParseResult(parseResult)
 
-        if (getRegistersHolder().isEmpty()) return
-
         if (!cellsSetup) {
             initialize()
-            setupCellContainers(getRegistersHolder())
             createCellPanel()
+            cellsSetup = true
         } else {
             cellsPanel.removeAll()
             addCellsToPanel()
@@ -111,6 +107,15 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
     abstract fun getHeaderForm(): BaseFilterForm<T>?
 
+    private fun createCellPanel() {
+        this.cellsPanel = JPanel()
+        val scrollPane = ScrollPaneFactory.createScrollPane(cellsPanel)
+        myMainPanel.add(scrollPane, BorderLayout.CENTER)
+
+        addCellsToPanel()
+        addActions()
+    }
+
     private fun updateCells(registerHolder: RegistersHolder<*>) {
         for (registerCellContainer in registerCellContainers) {
             registerCellContainer.updateCell(
@@ -119,50 +124,17 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
         }
     }
 
-    private fun setupCellContainers(registersHolder: RegistersHolder<*>) {
-        if (cellsSetup) return
-
-        val registers = registersHolder.registers
-        val registerCellContainers = mutableListOf<RegisterCellContainer>()
-        for (register in registers) {
-            registerCellContainers.add(RegisterCellContainer(register.registerName))
-        }
-        this.registerCellContainers = registerCellContainers
-
-        for ((i, cellContainer) in registerCellContainers.withIndex()) {
-            cellContainer.createCell(project, registers[i], getCellCreateProvider())
-        }
-
-        this.cellsSetup = true
-    }
-
-    private fun createCellPanel() {
-        this.cellsPanel = JPanel(GridLayoutManager(registerCellContainers.size, 2))
-        val scrollPane = ScrollPaneFactory.createScrollPane(cellsPanel)
-        myMainPanel.add(scrollPane, BorderLayout.CENTER)
-
-        addCellsToPanel()
-        addActions()
-    }
-
     private fun addCellsToPanel() {
         val registersToView = getRegistersToView()
-        var rowIdx = 0
-
-        var i = 0
-        for (rc in registerCellContainers) {
-            if (registersToView.isEmpty() || registersToView.contains(rc.myRegisterName)) {
-                val gridConstraints = GridConstraints()
-                gridConstraints.row = rowIdx
-                gridConstraints.column = i % 2
-                if (gridConstraints.column == 1) {
-                    rowIdx++
-                }
-                gridConstraints.anchor = GridConstraints.ANCHOR_WEST
-                cellsPanel.add(rc.getMainPanel(), gridConstraints, -1)
-                i++
-            }
+        this.registerCellContainers = getRegistersHolder().registers.filter {
+            registersToView.isEmpty() || registersToView.contains(it.registerName)
+        }.map {
+            val registerCellContainer = RegisterCellContainer(it.registerName)
+            registerCellContainer.createCell(project, it, getCellCreateProvider())
+            registerCellContainer
         }
+        val table = RegDebugRegisterTable(RegDebugRegisterTableModel(this.registerCellContainers))
+        this.cellsPanel.add(table, BorderLayout.WEST)
     }
 
     private fun getRegistersToView(): Set<String> {

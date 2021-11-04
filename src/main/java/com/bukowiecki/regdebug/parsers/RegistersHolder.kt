@@ -17,4 +17,6 @@ interface RegistersHolder<T : Register> {
     fun isEmpty(): Boolean {
         return registers.isEmpty()
     }
+
+    fun numberOfRegisters() = registers.size
 }
