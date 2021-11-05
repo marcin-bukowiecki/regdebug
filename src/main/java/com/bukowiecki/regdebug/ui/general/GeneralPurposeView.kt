@@ -30,6 +30,10 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
 
     private val myHeaderForm = GeneralPurposeRegistersHeaderForm(this)
 
+    override fun numberOfColumns(): Int {
+        return 3
+    }
+
     override fun rebuildView(parseResult: ParseResult) {
         myHeaderForm.statusLabel.text = "Loading registers..."
         myHeaderForm.statusLabel.foreground = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultForeground

@@ -10,41 +10,42 @@ import javax.swing.table.AbstractTableModel
 /**
  * @author Marcin Bukowiecki
  */
-class RegDebugRegisterTableModel(private val registers: List<RegisterCellContainer>) : AbstractTableModel() {
+class RegDebugRegisterTableModel(private val registers: List<RegisterCellContainer>,
+                                 private val columns: Int) : AbstractTableModel() {
 
   override fun getRowCount(): Int {
-    return registers.size / 2
+    return registers.size
   }
 
   override fun getColumnName(column: Int): String = ""
 
-  override fun getColumnCount(): Int = 4
+  override fun getColumnCount(): Int = columns
 
   override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
     return false
   }
 
   override fun getValueAt(row: Int, column: Int): Any {
-    when (column) {
+    return when (column) {
       0 -> {
-        return registers[row].myRegisterName
+        registers[row]
       }
       1 -> {
-        return registers[row].getHexTextField()
+        registers[row]
       }
       2 -> {
-        return registers[2 * row].myRegisterName
-      }
-      3 -> {
-        return registers[2 * row].getHexTextField()
+        registers[row].myCell.getInfoText()
       }
       else -> {
-        return ""
+        ""
       }
     }
   }
 
   override fun getColumnClass(columnIndex: Int): Class<*> {
+    if (columnIndex == 0 || columnIndex == 1) {
+      return RegisterCellContainer::class.java
+    }
     return String::class.java
   }
 }
