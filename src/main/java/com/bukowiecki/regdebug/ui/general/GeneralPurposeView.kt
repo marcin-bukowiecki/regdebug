@@ -8,6 +8,7 @@ package com.bukowiecki.regdebug.ui.general
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsManager
@@ -29,6 +30,10 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
 
     override fun numberOfColumns(): Int {
         return 3
+    }
+
+    override fun numberOfTables(): Int {
+        return RegDebugSettings.getInstance(project).numberOfGeneralPurposeTables
     }
 
     override fun rebuildView(parseResult: ParseResult) {

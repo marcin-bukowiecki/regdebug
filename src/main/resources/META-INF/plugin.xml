@@ -88,5 +88,14 @@
                 id="RegDebug.ToHex">
             <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
         </action>
+
+        <action class="com.bukowiecki.regdebug.actions.SetRegisterValueAction"
+                description="Set register value"
+                text="Set Register Value"
+                id="RegDebug.SetRegisterValue">
+            <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+            <add-to-group group-id="RegDebug.FloatingPointRegisters"/>
+            <add-to-group group-id="RegDebug.OtherRegisters"/>
+        </action>
     </actions>
 </idea-plugin>

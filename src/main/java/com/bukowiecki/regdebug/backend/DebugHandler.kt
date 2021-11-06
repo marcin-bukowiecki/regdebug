@@ -10,5 +10,9 @@ package com.bukowiecki.regdebug.backend
  */
 interface DebugHandler {
 
-    fun handle()
+  val backendType: BackendType
+
+  fun handle()
+
+  fun handleSetCommand(register: String, operator: String, value: String): String?
 }

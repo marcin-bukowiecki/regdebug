@@ -12,8 +12,7 @@ import com.bukowiecki.regdebug.ui.RegisterCellContainer
  * @author Marcin Bukowiecki
  */
 class GeneralPurposeTableModel(registers: List<RegisterCellContainer>,
-                               numberOfColumns: Int,
-                               numberOfTables: Int = 1) : RegDebugRegisterTableModel(registers, numberOfColumns, numberOfTables) {
+                               numberOfColumns: Int) : RegDebugRegisterTableModel(registers, numberOfColumns) {
 
   override fun getValueAt(row: Int, column: Int): Any {
     return when (column) {

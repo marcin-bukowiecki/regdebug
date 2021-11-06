@@ -5,6 +5,7 @@
 
 package com.bukowiecki.regdebug.backend.lldb
 
+import com.bukowiecki.regdebug.backend.BackendType
 import com.bukowiecki.regdebug.backend.BaseDebugHandler
 import com.bukowiecki.regdebug.parsers.lldb.LLDBRegistersParser
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
@@ -23,6 +24,36 @@ class LLDBDebugHandler(sessionTab: RegDebugSessionTab,
                        private val driver: LLDBDriver) : BaseDebugHandler(sessionTab) {
 
     private val command = "register read --all"
+
+    override val backendType: BackendType
+        get() = BackendType.LLDB
+
+    override fun handleSetCommand(register: String, operator: String, value: String): String? {
+        val request = ProtobufMessageFactory
+            .handleConsoleCommand(-1, -1, "register write $register $value")
+        this.request = request
+
+        val reply = try {
+            CompletableFuture.supplyAsync {
+                driver.sendMessageAndWaitForReply(
+                    request,
+                    ProtocolResponses.HandleConsoleCommand_Res::class.java,
+                )
+            }.get(timeout, TimeUnit.SECONDS)
+        } catch (e: TimeoutException) {
+            handleError(e)
+            return null
+        } catch (e: ExecutionException) {
+            handleError(e)
+            return null
+        }
+
+        return if (reply.hasErr()) {
+            reply.err
+        } else {
+            null
+        }
+    }
 
     override fun handle() {
         val views = sessionTab.views

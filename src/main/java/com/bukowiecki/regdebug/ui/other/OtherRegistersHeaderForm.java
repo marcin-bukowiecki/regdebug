@@ -11,6 +11,7 @@ import com.bukowiecki.regdebug.settings.RegDebugSettings;
 import com.bukowiecki.regdebug.ui.BaseFilterForm;
 import com.bukowiecki.regdebug.ui.RegDebugView;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -45,13 +46,19 @@ public class OtherRegistersHeaderForm extends BaseFilterForm<OtherRegisters> {
     }
 
     @Override
-    public @NotNull String getSettings(@NotNull RegDebugSettings settings) {
-        return settings.getOtherRegistersToSelect();
+    public void initSettings(@NotNull RegDebugSettings settings) {
+        filterTextField.setText(settings.getOtherRegistersToSelect());
     }
 
     @NotNull
     @Override
     public Class<? extends RegDebugView<?>> getViewClass() {
         return OtherRegistersView.class;
+    }
+
+    @Nullable
+    @Override
+    public JTextField getNumberOfTablesTextField() {
+        return null;
     }
 }

@@ -7,7 +7,6 @@ package com.bukowiecki.regdebug.settings
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.components.PersistentStateComponent
-import com.intellij.openapi.components.ServiceManager
 import com.intellij.openapi.components.State
 import com.intellij.openapi.components.Storage
 import com.intellij.openapi.project.Project
@@ -37,6 +36,14 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
 
     var registersLoadingTimeout = 5L
 
+    var numberOfGeneralPurposeTables: Int = 3
+
+    var numberOfFloatingPointTables: Int = 3
+
+    var numberOfExceptionStateTables: Int = 1
+
+    var numberOfOtherTables: Int = 3
+
     override fun getState(): RegDebugSettings {
         return this
     }
@@ -50,6 +57,10 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
         this.showOtherRegisters = state.showOtherRegisters
         this.openOnStartup = state.openOnStartup
         this.otherRegistersToSelect = state.otherRegistersToSelect
+        this.numberOfGeneralPurposeTables = state.numberOfGeneralPurposeTables
+        this.numberOfFloatingPointTables = state.numberOfFloatingPointTables
+        this.numberOfOtherTables = state.numberOfOtherTables
+        this.numberOfExceptionStateTables = state.numberOfExceptionStateTables
     }
 
     override fun dispose() {
@@ -60,7 +71,7 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
 
         @JvmStatic
         fun getInstance(project: Project): RegDebugSettings {
-            return ServiceManager.getService(project, RegDebugSettings::class.java)
+            return project.getService(RegDebugSettings::class.java)
         }
     }
 }

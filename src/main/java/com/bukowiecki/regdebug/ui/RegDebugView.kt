@@ -51,6 +51,9 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
     cellsPanel.removeAll()
     addCellsToPanel()
     cellsPanel.revalidate()
+    cellsPanel.repaint()
+    myMainPanel.revalidate()
+    myMainPanel.repaint()
   }
 
   open fun addActions() {  }
@@ -60,6 +63,8 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
   fun getMainPanel(): JPanel {
     return myMainPanel
   }
+
+  open fun numberOfTables() = 2
 
   open fun addErrorMessages(message: String?) {}
 
@@ -106,10 +111,28 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
   private fun addCellsToPanel() {
     val registersToView = getRegistersToView()
-    val table = RegDebugRegisterTable(this, tableModelProvider(this.registerCellContainers.filter {
+    val numberOfColumns = numberOfTables()
+
+    val filteredRegisters = this.registerCellContainers.filter {
       registersToView.isEmpty() || registersToView.contains(it.myRegisterName)
-    })())
-    this.cellsPanel.add(table, BorderLayout.WEST)
+    }
+
+    val subLists = mutableListOf<MutableList<RegisterCellContainer>>()
+    var i = 0
+    while (i < numberOfColumns) {
+      subLists.add(mutableListOf())
+      i++
+    }
+
+    filteredRegisters.forEachIndexed { index, registerCellContainer ->
+      val slot = index % numberOfColumns
+      subLists[slot].add(registerCellContainer)
+    }
+
+    subLists.forEach { l ->
+      val table = RegDebugRegisterTable(this, tableModelProvider(l)())
+      this.cellsPanel.add(table)
+    }
   }
 
   private fun getRegistersToView(): Set<String> {

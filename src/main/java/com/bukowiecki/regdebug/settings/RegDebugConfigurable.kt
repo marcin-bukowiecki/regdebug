@@ -29,7 +29,10 @@ class RegDebugConfigurable(private val project: Project) : Configurable {
         modified = modified || settingsComponent?.showExceptionStateRegisters?.isSelected != settings.showExceptionStateRegisters
         modified = modified || settingsComponent?.showOtherRegisters?.isSelected != settings.showOtherRegisters
         modified = modified || settingsComponent?.openOnStartup?.isSelected != settings.openOnStartup
-
+        modified = modified || settingsComponent?.numberOfGeneralPurposeTables?.text != settings.numberOfGeneralPurposeTables.toString()
+        modified = modified || settingsComponent?.numberOfFloatingPointTables?.text != settings.numberOfFloatingPointTables.toString()
+        modified = modified || settingsComponent?.numberOfExceptionsStateTables?.text != settings.numberOfExceptionStateTables.toString()
+        modified = modified || settingsComponent?.numberOfOtherTables?.text != settings.numberOfOtherTables.toString()
         return modified
     }
 
@@ -40,6 +43,10 @@ class RegDebugConfigurable(private val project: Project) : Configurable {
         settings.showExceptionStateRegisters = settingsComponent?.showExceptionStateRegisters?.isSelected ?: false
         settings.showOtherRegisters = settingsComponent?.showOtherRegisters?.isSelected ?: false
         settings.openOnStartup = settingsComponent?.openOnStartup?.isSelected ?: false
+        settings.numberOfGeneralPurposeTables = settingsComponent?.numberOfGeneralPurposeTables?.text?.toInt() ?: return
+        settings.numberOfFloatingPointTables = settingsComponent?.numberOfFloatingPointTables?.text?.toInt() ?: return
+        settings.numberOfOtherTables = settingsComponent?.numberOfOtherTables?.text?.toInt() ?: return
+        settings.numberOfExceptionStateTables = settingsComponent?.numberOfExceptionsStateTables?.text?.toInt() ?: return
     }
 
     override fun getDisplayName(): String {
@@ -54,6 +61,11 @@ class RegDebugConfigurable(private val project: Project) : Configurable {
         settingsComponent?.showExceptionStateRegisters?.isSelected = instance.showExceptionStateRegisters
         settingsComponent?.showOtherRegisters?.isSelected = instance.showOtherRegisters
         settingsComponent?.openOnStartup?.isSelected = instance.openOnStartup
+
+        settingsComponent?.numberOfGeneralPurposeTables?.text = instance.numberOfGeneralPurposeTables.toString()
+        settingsComponent?.numberOfFloatingPointTables?.text = instance.numberOfFloatingPointTables.toString()
+        settingsComponent?.numberOfOtherTables?.text = instance.numberOfOtherTables.toString()
+        settingsComponent?.numberOfExceptionsStateTables?.text = instance.numberOfExceptionStateTables.toString()
     }
 
     companion object {

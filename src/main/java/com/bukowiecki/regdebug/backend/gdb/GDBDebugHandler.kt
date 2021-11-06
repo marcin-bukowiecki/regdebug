@@ -5,6 +5,7 @@
 
 package com.bukowiecki.regdebug.backend.gdb
 
+import com.bukowiecki.regdebug.backend.BackendType
 import com.bukowiecki.regdebug.backend.BaseDebugHandler
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.parsers.gdb.GDBRegistersParser
@@ -22,8 +23,24 @@ import kotlinx.coroutines.withTimeout
 class GDBDebugHandler(sessionTab: RegDebugSessionTab,
                       private val driver: GDBDriver) : BaseDebugHandler(sessionTab) {
 
+    override val backendType: BackendType
+        get() = BackendType.GDB
+
     private val getGroupsCommand = "maint print reggroups"
     private val getRegisterGroupCommand = "info registers "
+
+    override fun handleSetCommand(register: String, operator: String, value: String): String? {
+        val cmd = "set $$register$operator$value"
+        val setResponse = runBlocking {
+            withTimeout(timeout * 1000) {
+                async {
+                    driver.executeInterpreterCommand(cmd)
+                }.blockingGet()
+            }
+        }
+        log.info("Set command $cmd result: $setResponse")
+        return null
+    }
 
     override fun handle() {
         val views = sessionTab.views

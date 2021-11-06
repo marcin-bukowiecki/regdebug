@@ -40,6 +40,10 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
         }
     }
 
+    override fun numberOfTables(): Int {
+        return 1
+    }
+
     override fun getActionGroupId(): String {
         return "RegDebug.ExceptionStateRegisters"
     }

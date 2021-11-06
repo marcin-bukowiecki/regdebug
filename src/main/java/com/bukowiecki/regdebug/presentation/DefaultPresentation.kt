@@ -16,6 +16,10 @@ class DefaultPresentation: RegisterPresentation {
         return register.hex
     }
 
+    override fun getText(hex: String): String {
+        return hex
+    }
+
     companion object {
 
         val instance = DefaultPresentation()

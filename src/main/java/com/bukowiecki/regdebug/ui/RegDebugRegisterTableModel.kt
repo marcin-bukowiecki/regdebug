@@ -11,11 +11,10 @@ import javax.swing.table.AbstractTableModel
  * @author Marcin Bukowiecki
  */
 open class RegDebugRegisterTableModel(protected val registers: List<RegisterCellContainer>,
-                                      private val numberOfColumns: Int,
-                                      private val numberOfTables: Int = 1) : AbstractTableModel() {
+                                      private val numberOfColumns: Int) : AbstractTableModel() {
 
   override fun getRowCount(): Int {
-    return registers.size / numberOfTables
+    return registers.size
   }
 
   override fun getColumnName(column: Int): String = ""
