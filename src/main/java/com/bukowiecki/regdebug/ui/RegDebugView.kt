@@ -34,8 +34,8 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
       cellsSetup = true
     } else {
       cellsPanel.removeAll()
-      updateCells(getRegistersHolder())
       addCellsToPanel()
+      updateCells(getRegistersHolder())
     }
 
     afterRebuild()
@@ -63,7 +63,13 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
   open fun addErrorMessages(message: String?) {}
 
-  open fun initialize() {}
+  open fun initialize() {
+    this.registerCellContainers = getRegistersHolder().registers.map {
+      val registerCellContainer = RegisterCellContainer(it.registerName)
+      registerCellContainer.createCell(project, it, getCellCreateProvider())
+      registerCellContainer
+    }
+  }
 
   open fun afterRebuild() {
     cellsPanel.revalidate()
@@ -74,6 +80,12 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
   abstract fun getRegistersHolder(): T
 
   abstract fun getHeaderForm(): BaseFilterForm<T>?
+
+  open fun tableModelProvider(registerCellContainers: List<RegisterCellContainer>): () -> RegDebugRegisterTableModel {
+    return {
+      RegDebugRegisterTableModel(registerCellContainers, numberOfColumns())
+    }
+  }
 
   private fun createCellPanel() {
     this.cellsPanel = JPanel()
@@ -94,14 +106,9 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
   private fun addCellsToPanel() {
     val registersToView = getRegistersToView()
-    this.registerCellContainers = getRegistersHolder().registers.filter {
-      registersToView.isEmpty() || registersToView.contains(it.registerName)
-    }.map {
-      val registerCellContainer = RegisterCellContainer(it.registerName)
-      registerCellContainer.createCell(project, it, getCellCreateProvider())
-      registerCellContainer
-    }
-    val table = RegDebugRegisterTable(this, RegDebugRegisterTableModel(this.registerCellContainers, numberOfColumns()))
+    val table = RegDebugRegisterTable(this, tableModelProvider(this.registerCellContainers.filter {
+      registersToView.isEmpty() || registersToView.contains(it.myRegisterName)
+    })())
     this.cellsPanel.add(table, BorderLayout.WEST)
   }
 

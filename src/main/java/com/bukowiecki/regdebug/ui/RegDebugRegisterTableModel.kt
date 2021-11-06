@@ -10,16 +10,17 @@ import javax.swing.table.AbstractTableModel
 /**
  * @author Marcin Bukowiecki
  */
-class RegDebugRegisterTableModel(private val registers: List<RegisterCellContainer>,
-                                 private val columns: Int) : AbstractTableModel() {
+open class RegDebugRegisterTableModel(protected val registers: List<RegisterCellContainer>,
+                                      private val numberOfColumns: Int,
+                                      private val numberOfTables: Int = 1) : AbstractTableModel() {
 
   override fun getRowCount(): Int {
-    return registers.size
+    return registers.size / numberOfTables
   }
 
   override fun getColumnName(column: Int): String = ""
 
-  override fun getColumnCount(): Int = columns
+  override fun getColumnCount(): Int = numberOfColumns
 
   override fun isCellEditable(rowIndex: Int, columnIndex: Int): Boolean {
     return false
@@ -32,9 +33,6 @@ class RegDebugRegisterTableModel(private val registers: List<RegisterCellContain
       }
       1 -> {
         registers[row]
-      }
-      2 -> {
-        registers[row].myCell.getInfoText()
       }
       else -> {
         ""

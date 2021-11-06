@@ -46,6 +46,7 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
 
     override fun initialize() {
         myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        super.initialize()
     }
 
     override fun dispose() {

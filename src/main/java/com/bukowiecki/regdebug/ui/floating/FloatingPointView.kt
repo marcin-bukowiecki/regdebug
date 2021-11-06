@@ -55,6 +55,7 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
         myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
         myHeaderForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
         myMainPanel.add(myHeaderForm.mainPanel, BorderLayout.NORTH)
+        super.initialize()
     }
 
     override fun dispose() {
