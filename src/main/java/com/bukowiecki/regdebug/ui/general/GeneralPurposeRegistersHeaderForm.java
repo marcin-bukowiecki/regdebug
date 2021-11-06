@@ -72,7 +72,6 @@ public class GeneralPurposeRegistersHeaderForm extends BaseFilterForm<GeneralPur
             if (i > 10) {
                 i = 10;
             }
-            numberOfTablesTextField.setText("10");
             settings.setNumberOfGeneralPurposeTables(i);
         } catch (NumberFormatException ignored) { }
     }

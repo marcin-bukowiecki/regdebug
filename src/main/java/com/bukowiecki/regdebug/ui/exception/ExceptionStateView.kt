@@ -7,6 +7,7 @@ package com.bukowiecki.regdebug.ui.exception
 
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.BaseFilterForm
 import com.bukowiecki.regdebug.ui.CellCreateProvider
 import com.bukowiecki.regdebug.ui.RegDebugView
@@ -23,6 +24,10 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
 
     private lateinit var myExceptionStateRegisters: RegistersHolder<ExceptionStateRegister>
 
+    override fun numberOfTables(): Int {
+        return RegDebugSettings.getInstance(project).numberOfExceptionStateTables
+    }
+
     override fun getRegistersHolder(): RegistersHolder<ExceptionStateRegister> {
         return myExceptionStateRegisters
     }
@@ -38,10 +43,6 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
                 return ExceptionStateRegisterCell(register)
             }
         }
-    }
-
-    override fun numberOfTables(): Int {
-        return 1
     }
 
     override fun getActionGroupId(): String {

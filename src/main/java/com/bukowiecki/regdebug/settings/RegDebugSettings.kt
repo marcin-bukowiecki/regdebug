@@ -42,7 +42,7 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
 
     var numberOfExceptionStateTables: Int = 1
 
-    var numberOfOtherTables: Int = 3
+    var numberOfOtherTables: Int = 2
 
     override fun getState(): RegDebugSettings {
         return this

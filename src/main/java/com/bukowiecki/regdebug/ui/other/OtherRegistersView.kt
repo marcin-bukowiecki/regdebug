@@ -9,6 +9,7 @@ import com.bukowiecki.regdebug.parsers.OtherRegisters
 import com.bukowiecki.regdebug.parsers.ParseResult
 import com.bukowiecki.regdebug.parsers.Register
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.BaseFilterForm
 import com.bukowiecki.regdebug.ui.CellCreateProvider
 import com.bukowiecki.regdebug.ui.RegDebugView
@@ -27,6 +28,10 @@ class OtherRegistersView(project: Project) : RegDebugView<OtherRegisters>(projec
     private lateinit var myOtherRegisters: OtherRegisters
 
     private val myHeaderForm = OtherRegistersHeaderForm(this)
+
+    override fun numberOfTables(): Int {
+        return RegDebugSettings.getInstance(project).numberOfOtherTables
+    }
 
     override fun getRegistersHolder(): OtherRegisters {
         return myOtherRegisters

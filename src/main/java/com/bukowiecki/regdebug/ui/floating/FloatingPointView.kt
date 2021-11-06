@@ -7,6 +7,7 @@ package com.bukowiecki.regdebug.ui.floating
 
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.BaseFilterForm
 import com.bukowiecki.regdebug.ui.CellCreateProvider
 import com.bukowiecki.regdebug.ui.RegDebugView
@@ -25,6 +26,10 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
     private lateinit var myFloatingPointRegisters: FloatingPointRegisters
 
     private val myHeaderForm = FloatingPointRegistersHeaderForm(this)
+
+    override fun numberOfTables(): Int {
+        return RegDebugSettings.getInstance(project).numberOfFloatingPointTables
+    }
 
     override fun getRegistersHolder(): FloatingPointRegisters {
         return myFloatingPointRegisters

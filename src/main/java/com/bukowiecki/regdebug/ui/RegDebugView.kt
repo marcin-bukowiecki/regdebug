@@ -13,6 +13,7 @@ import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import javax.swing.JPanel
+import javax.swing.JScrollPane
 
 /**
  * @author Marcin Bukowiecki
@@ -20,23 +21,29 @@ import javax.swing.JPanel
 abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
   protected val myMainPanel: JPanel = BorderLayoutPanel()
-  protected lateinit var cellsPanel: JPanel
 
-  private lateinit var registerCellContainers: List<RegisterCellContainer>
-  private var cellsSetup = false
+  private val myContentPanel: JPanel = JPanel()
+  private val myScrollPane: JScrollPane = ScrollPaneFactory.createScrollPane(myContentPanel)
+  private var initialized = false
+
+  private var registerCellContainers = listOf<RegisterCellContainer>()
+
+  init {
+    myMainPanel.add(myScrollPane, BorderLayout.WEST)
+  }
 
   open fun rebuildView(parseResult: ParseResult) {
     extractParseResult(parseResult)
 
-    if (!cellsSetup) {
+    if (!initialized) {
       initialize()
-      createCellPanel()
-      cellsSetup = true
-    } else {
-      cellsPanel.removeAll()
-      addCellsToPanel()
-      updateCells(getRegistersHolder())
+      initialized = true
     }
+
+    myContentPanel.removeAll()
+    addCellsToPanel()
+    addActions()
+    updateCells(getRegistersHolder())
 
     afterRebuild()
   }
@@ -48,12 +55,13 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
   abstract fun getCellCreateProvider(): CellCreateProvider
 
   fun refreshView() {
-    cellsPanel.removeAll()
+    myContentPanel.removeAll()
     addCellsToPanel()
-    cellsPanel.revalidate()
-    cellsPanel.repaint()
+    myContentPanel.revalidate()
+    myContentPanel.repaint()
     myMainPanel.revalidate()
     myMainPanel.repaint()
+
   }
 
   open fun addActions() {  }
@@ -77,7 +85,7 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
   }
 
   open fun afterRebuild() {
-    cellsPanel.revalidate()
+    myContentPanel.revalidate()
   }
 
   abstract fun extractParseResult(parseResult: ParseResult)
@@ -90,15 +98,6 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
     return {
       RegDebugRegisterTableModel(registerCellContainers, numberOfColumns())
     }
-  }
-
-  private fun createCellPanel() {
-    this.cellsPanel = JPanel()
-    val scrollPane = ScrollPaneFactory.createScrollPane(cellsPanel)
-    myMainPanel.add(scrollPane, BorderLayout.WEST)
-
-    addCellsToPanel()
-    addActions()
   }
 
   private fun updateCells(registerHolder: RegistersHolder<*>) {
@@ -131,7 +130,7 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
     subLists.forEach { l ->
       val table = RegDebugRegisterTable(this, tableModelProvider(l)())
-      this.cellsPanel.add(table)
+      myContentPanel.add(table)
     }
   }
 

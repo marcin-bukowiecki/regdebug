@@ -55,7 +55,7 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
 
         myHeaderForm.statusLabel.text = ""
 
-        cellsPanel.revalidate()
+        myMainPanel.revalidate()
     }
 
     override fun extractParseResult(parseResult: ParseResult) {

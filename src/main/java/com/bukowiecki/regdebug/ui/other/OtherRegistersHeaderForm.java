@@ -23,11 +23,25 @@ public class OtherRegistersHeaderForm extends BaseFilterForm<OtherRegisters> {
     private JPanel registerFilterPanel;
     private JTextField filterTextField;
     private JLabel filterLabel;
+    private JLabel numberOfTablesLabel;
+    private JTextField numberOfTablesTextField;
 
     public OtherRegistersHeaderForm(RegDebugView<OtherRegisters> regDebugView) {
         super(regDebugView);
         filterLabel.setText(RegDebugBundle.INSTANCE.message("regdebug.tab.filter"));
         initListeners();
+    }
+
+    @Override
+    public void setSettings(@NotNull RegDebugSettings settings) {
+        settings.setOtherRegistersToSelect(filterTextField.getText());
+        try {
+            int i = Integer.parseInt(numberOfTablesTextField.getText());
+            if (i > 10) {
+                i = 10;
+            }
+            settings.setNumberOfOtherTables(i);
+        } catch (NumberFormatException ignored) { }
     }
 
     @NotNull
@@ -41,13 +55,9 @@ public class OtherRegistersHeaderForm extends BaseFilterForm<OtherRegisters> {
     }
 
     @Override
-    public void setSettings(@NotNull RegDebugSettings settings) {
-        settings.setOtherRegistersToSelect(filterTextField.getText());
-    }
-
-    @Override
     public void initSettings(@NotNull RegDebugSettings settings) {
         filterTextField.setText(settings.getOtherRegistersToSelect());
+        numberOfTablesTextField.setText(String.valueOf(settings.getNumberOfOtherTables()));
     }
 
     @NotNull
@@ -59,6 +69,6 @@ public class OtherRegistersHeaderForm extends BaseFilterForm<OtherRegisters> {
     @Nullable
     @Override
     public JTextField getNumberOfTablesTextField() {
-        return null;
+        return numberOfTablesTextField;
     }
 }

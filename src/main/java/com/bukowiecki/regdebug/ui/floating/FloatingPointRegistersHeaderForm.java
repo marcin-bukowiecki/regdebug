@@ -23,6 +23,8 @@ public class FloatingPointRegistersHeaderForm extends BaseFilterForm<FloatingPoi
     private JPanel registerFilterPanel;
     private JLabel filterLabel;
     private JTextField filterTextField;
+    private JTextField numberOfTablesTextField;
+    private JLabel numberOfTablesLabel;
 
     public FloatingPointRegistersHeaderForm(RegDebugView<FloatingPointRegisters> regDebugView) {
         super(regDebugView);
@@ -43,11 +45,19 @@ public class FloatingPointRegistersHeaderForm extends BaseFilterForm<FloatingPoi
     @Override
     public void setSettings(@NotNull RegDebugSettings settings) {
         settings.setFloatingRegistersToSelect(filterTextField.getText());
+        try {
+            int i = Integer.parseInt(numberOfTablesTextField.getText());
+            if (i > 10) {
+                i = 10;
+            }
+            settings.setNumberOfFloatingPointTables(i);
+        } catch (NumberFormatException ignored) { }
     }
 
     @Override
     public void initSettings(@NotNull RegDebugSettings settings) {
         filterTextField.setText(settings.getFloatingRegistersToSelect());
+        numberOfTablesTextField.setText(String.valueOf(settings.getNumberOfFloatingPointTables()));
     }
 
     @NotNull
@@ -59,6 +69,6 @@ public class FloatingPointRegistersHeaderForm extends BaseFilterForm<FloatingPoi
     @Nullable
     @Override
     public JTextField getNumberOfTablesTextField() {
-        return null;
+        return numberOfTablesTextField;
     }
 }
