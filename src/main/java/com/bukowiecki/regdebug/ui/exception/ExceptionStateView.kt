@@ -24,6 +24,10 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
 
     private lateinit var myExceptionStateRegisters: RegistersHolder<ExceptionStateRegister>
 
+    override fun getViewClass(): Class<*> {
+        return ExceptionStateView::class.java
+    }
+
     override fun numberOfTables(): Int {
         return RegDebugSettings.getInstance(project).numberOfExceptionStateTables
     }
@@ -49,14 +53,24 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
         return "RegDebug.ExceptionStateRegisters"
     }
 
-    override fun initialize() {
-        myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        super.initialize()
-    }
-
     override fun dispose() {
         Disposer.dispose(this)
     }
 
-    override fun getHeaderForm(): BaseFilterForm<RegistersHolder<ExceptionStateRegister>>? = null
+    override fun loadSettings(settings: RegDebugSettings) {
+        filterTextField.text = settings.exceptionRegistersToSelect
+        registerGroupsTextField.text = settings.numberOfExceptionStateTables.toString()
+    }
+
+    override fun updateSettings(settings: RegDebugSettings) {
+        settings.exceptionRegistersToSelect = filterTextField.text
+        try {
+            var i: Int = registerGroupsTextField.text.toInt()
+            if (i > 10) {
+                i = 10
+            }
+            settings.numberOfExceptionStateTables = i
+        } catch (ignored: NumberFormatException) {
+        }
+    }
 }
