@@ -19,9 +19,10 @@ import javax.swing.JComponent
 /**
  * @author Marcin Bukowiecki
  */
-class SetRegisterValueDialog(private val registerCellContainer: RegisterCellContainer,
-                             private val handler: DebugHandler,
-                             private val project: Project) : DialogWrapper(project) {
+class SetRegisterValueDialog(
+  registerCellContainer: RegisterCellContainer,
+  private val handler: DebugHandler,
+  private val project: Project) : DialogWrapper(project) {
 
   private val registerName = registerCellContainer.myRegisterName
   private val mainView = SetRegisterValuePanel(handler.backendType)
