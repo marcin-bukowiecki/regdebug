@@ -67,7 +67,7 @@ class RegDebugSettingsPanel {
                 1, false
             )
             .addLabeledComponent(
-                JBLabel(RegDebugBundle.message("regdebug.settings.openOnStartup")), numberOfOtherTables,
+                JBLabel(RegDebugBundle.message("regdebug.settings.otherTables")), numberOfOtherTables,
                 1, false
             )
             .addComponentFillVertically(JPanel(), 0)

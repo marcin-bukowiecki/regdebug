@@ -8,15 +8,12 @@ package com.bukowiecki.regdebug.ui.floating
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
 import com.bukowiecki.regdebug.settings.RegDebugSettings
-import com.bukowiecki.regdebug.ui.BaseFilterForm
 import com.bukowiecki.regdebug.ui.CellCreateProvider
 import com.bukowiecki.regdebug.ui.RegDebugView
 import com.bukowiecki.regdebug.ui.RegisterCell
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
-import java.awt.BorderLayout
-import javax.swing.BorderFactory
 
 /**
  * @author Marcin Bukowiecki
@@ -25,7 +22,9 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
 
     private lateinit var myFloatingPointRegisters: FloatingPointRegisters
 
-    private val myHeaderForm = FloatingPointRegistersHeaderForm(this)
+    override fun getViewClass(): Class<*> {
+        return FloatingPointView::class.java
+    }
 
     override fun numberOfTables(): Int {
         return RegDebugSettings.getInstance(project).numberOfFloatingPointTables
@@ -52,18 +51,24 @@ class FloatingPointView(project: Project) : RegDebugView<FloatingPointRegisters>
         return "RegDebug.FloatingPointRegisters"
     }
 
-    override fun getHeaderForm(): BaseFilterForm<FloatingPointRegisters> {
-        return myHeaderForm
-    }
-
-    override fun initialize() {
-        myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        myHeaderForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
-        myMainPanel.add(myHeaderForm.mainPanel, BorderLayout.NORTH)
-        super.initialize()
-    }
-
     override fun dispose() {
         Disposer.dispose(this)
+    }
+
+    override fun loadSettings(settings: RegDebugSettings) {
+        filterTextField.text = settings.floatingRegistersToSelect
+        registerGroupsTextField.text = settings.numberOfFloatingPointTables.toString()
+    }
+
+    override fun updateSettings(settings: RegDebugSettings) {
+        settings.floatingRegistersToSelect = filterTextField.text
+        try {
+            var i: Int = registerGroupsTextField.text.toInt()
+            if (i > 10) {
+                i = 10
+            }
+            settings.numberOfFloatingPointTables = i
+        } catch (ignored: NumberFormatException) {
+        }
     }
 }

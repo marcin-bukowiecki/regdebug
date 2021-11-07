@@ -24,6 +24,8 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
 
     var floatingRegistersToSelect: String = ""
 
+    var exceptionRegistersToSelect: String = ""
+
     var otherRegistersToSelect: String = ""
 
     var showFloatingPointRegisters: Boolean = true
@@ -61,6 +63,7 @@ class RegDebugSettings : PersistentStateComponent<RegDebugSettings>, Disposable 
         this.numberOfFloatingPointTables = state.numberOfFloatingPointTables
         this.numberOfOtherTables = state.numberOfOtherTables
         this.numberOfExceptionStateTables = state.numberOfExceptionStateTables
+        this.exceptionRegistersToSelect = state.exceptionRegistersToSelect
     }
 
     override fun dispose() {
