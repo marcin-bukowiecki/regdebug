@@ -5,6 +5,9 @@
 
 package com.bukowiecki.regdebug.listeners
 
+import com.bukowiecki.regdebug.backend.DebugHandler
+import com.bukowiecki.regdebug.backend.gdb.GDBDebugHandler
+import com.bukowiecki.regdebug.backend.lldb.LLDBDebugHandler
 import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.floating.FloatingPointView
 import com.bukowiecki.regdebug.ui.general.GeneralPurposeView
@@ -63,6 +66,9 @@ class ProjectOpened : StartupActivity {
             val regDebugSessionTab = RegDebugSessionTab(debugProcess)
             debugProcess.putUserData(DataKeys.sessionTab, regDebugSessionTab)
 
+            val debugHandler = createHandler(regDebugSessionTab, debugProcess) ?: return
+            debugProcess.putUserData(DataKeys.debugHandler, debugHandler)
+
             regDebugSessionTab.registerGeneralPurposeView(GeneralPurposeView(project))
 
             if (RegDebugSettings.getInstance(project).showFloatingPointRegisters) {
@@ -83,9 +89,30 @@ class ProjectOpened : StartupActivity {
             debugProcess.session.addSessionListener(object : XDebugSessionListener {
 
                 override fun sessionPaused() {
-                    regDebugSessionTab.rebuildViews()
+                    regDebugSessionTab.rebuildViews(debugHandler)
                 }
             })
+        }
+    }
+
+    private fun createHandler(sessionTab: RegDebugSessionTab,
+                              debugProcess: CidrDebugProcess): DebugHandler? {
+
+        return when (val driverInTests = debugProcess.driverInTests) {
+            is LLDBDriver -> {
+                LLDBDebugHandler(sessionTab, driverInTests)
+            }
+            is GDBDriver -> {
+                GDBDebugHandler(sessionTab, driverInTests)
+            }
+            else -> {
+                if (driverInTests == null || driverInTests.javaClass.canonicalName == null) {
+                    RegDebugSessionTab.log.info("Debug process driver is null")
+                } else {
+                    RegDebugSessionTab.log.info("Debug process driver: ${driverInTests.javaClass.canonicalName} is not supported")
+                }
+                null
+            }
         }
     }
 }

@@ -54,6 +54,13 @@
             <reference id="$Copy"/>
         </group>
 
+        <group id="RegDebug.OtherRegisters"
+               description="RegDebug other registers actions"
+               text="RegDebug Other Registers Actions"
+               popup="true">
+            <reference id="$Copy"/>
+        </group>
+
         <action class="com.bukowiecki.regdebug.actions.ShowMemoryViewInEditorAction"
                 description="Show Memory View in editor for given register address"
                 text="Show Memory View In Editor"
@@ -80,6 +87,15 @@
                 text="To Hex"
                 id="RegDebug.ToHex">
             <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+        </action>
+
+        <action class="com.bukowiecki.regdebug.actions.SetRegisterValueAction"
+                description="Set register value"
+                text="Set Register Value"
+                id="RegDebug.SetRegisterValue">
+            <add-to-group group-id="RegDebug.GeneralPurposeRegisters"/>
+            <add-to-group group-id="RegDebug.FloatingPointRegisters"/>
+            <add-to-group group-id="RegDebug.OtherRegisters"/>
         </action>
     </actions>
 </idea-plugin>

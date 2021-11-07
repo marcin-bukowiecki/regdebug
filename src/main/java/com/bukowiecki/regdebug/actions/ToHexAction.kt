@@ -6,38 +6,17 @@
 package com.bukowiecki.regdebug.actions
 
 import com.bukowiecki.regdebug.presentation.DefaultPresentation
-import com.bukowiecki.regdebug.ui.RegisterCellContainer
-import com.bukowiecki.regdebug.utils.DataKeys
-import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 
 /**
  * @author Marcin Bukowiecki
  */
-class ToHexAction : AnAction() {
-
-    override fun update(e: AnActionEvent) {
-        e.presentation.isEnabled = isEnabled(e)
-        e.presentation.isVisible = e.presentation.isEnabled
-        super.update(e)
-    }
+class ToHexAction : RegDebugBaseAction() {
 
     override fun actionPerformed(e: AnActionEvent) {
         getRegisterCellContainer(e)?.let { registerCellContainer ->
             registerCellContainer.presentation = DefaultPresentation.instance
             registerCellContainer.refresh()
         }
-    }
-
-    private fun getRegisterCellContainer(e: AnActionEvent): RegisterCellContainer? {
-        return e.getData(DataKeys.registerCellContainer)
-    }
-
-    private fun isEnabled(e: AnActionEvent): Boolean {
-        e.project ?: return false
-        val registerCellContainer = getRegisterCellContainer(e) ?: return false
-        if (registerCellContainer.presentation is DefaultPresentation) return false
-        if (registerCellContainer.isFloatingPoint() || registerCellContainer.isExceptionState()) return false
-        return true
     }
 }

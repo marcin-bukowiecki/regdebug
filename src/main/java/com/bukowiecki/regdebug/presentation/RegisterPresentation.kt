@@ -13,4 +13,6 @@ import com.bukowiecki.regdebug.parsers.Register
 interface RegisterPresentation {
 
     fun getText(register: Register): String
+
+    fun getText(hex: String): String
 }

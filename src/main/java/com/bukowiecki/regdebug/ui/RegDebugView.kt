@@ -5,169 +5,138 @@
 
 package com.bukowiecki.regdebug.ui
 
-import com.bukowiecki.regdebug.actions.RegisterCopyProvider
 import com.bukowiecki.regdebug.parsers.ParseResult
 import com.bukowiecki.regdebug.parsers.RegistersHolder
-import com.bukowiecki.regdebug.utils.DataKeys
-import com.intellij.ide.DataManager
-import com.intellij.openapi.actionSystem.ActionGroup
-import com.intellij.openapi.actionSystem.ActionManager
-import com.intellij.openapi.actionSystem.PlatformDataKeys
 import com.intellij.openapi.project.Project
-import com.intellij.ui.PopupHandler
 import com.intellij.ui.ScrollPaneFactory
-import com.intellij.uiDesigner.core.GridConstraints
-import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.ui.components.BorderLayoutPanel
 import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
-import java.awt.Component
 import javax.swing.JPanel
+import javax.swing.JScrollPane
 
 /**
  * @author Marcin Bukowiecki
  */
 abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
-    protected val myMainPanel: JPanel = BorderLayoutPanel()
-    protected lateinit var cellsPanel: JPanel
+  protected val myMainPanel: JPanel = BorderLayoutPanel()
 
-    private lateinit var registerCellContainers: List<RegisterCellContainer>
-    private var cellsSetup = false
+  private val myContentPanel: JPanel = JPanel()
+  private val myScrollPane: JScrollPane = ScrollPaneFactory.createScrollPane(myContentPanel)
+  private var initialized = false
 
-    open fun rebuildView(parseResult: ParseResult) {
-        extractParseResult(parseResult)
+  private var registerCellContainers = listOf<RegisterCellContainer>()
 
-        if (getRegistersHolder().isEmpty()) return
+  init {
+    myMainPanel.add(myScrollPane, BorderLayout.WEST)
+  }
 
-        if (!cellsSetup) {
-            initialize()
-            setupCellContainers(getRegistersHolder())
-            createCellPanel()
-        } else {
-            cellsPanel.removeAll()
-            addCellsToPanel()
-            updateCells(getRegistersHolder())
-        }
+  open fun rebuildView(parseResult: ParseResult) {
+    extractParseResult(parseResult)
 
-        afterRebuild()
+    if (!initialized) {
+      initialize()
+      initialized = true
     }
 
-    abstract fun getActionGroupId(): String
+    myContentPanel.removeAll()
+    addCellsToPanel()
+    addActions()
+    updateCells(getRegistersHolder())
 
-    abstract fun getCellCreateProvider(): CellCreateProvider
+    afterRebuild()
+  }
 
-    fun refreshView() {
-        cellsPanel.removeAll()
-        addCellsToPanel()
-        cellsPanel.revalidate()
+  open fun numberOfColumns() = 2
+
+  abstract fun getActionGroupId(): String
+
+  abstract fun getCellCreateProvider(): CellCreateProvider
+
+  fun refreshView() {
+    myContentPanel.removeAll()
+    addCellsToPanel()
+    myContentPanel.revalidate()
+    myContentPanel.repaint()
+    myMainPanel.revalidate()
+    myMainPanel.repaint()
+
+  }
+
+  open fun addActions() {  }
+
+  open fun getPopupPlace(): @NonNls String = getActionGroupId()
+
+  fun getMainPanel(): JPanel {
+    return myMainPanel
+  }
+
+  open fun numberOfTables() = 2
+
+  open fun addErrorMessages(message: String?) {}
+
+  open fun initialize() {
+    this.registerCellContainers = getRegistersHolder().registers.map {
+      val registerCellContainer = RegisterCellContainer(it.registerName)
+      registerCellContainer.createCell(project, it, getCellCreateProvider())
+      registerCellContainer
+    }
+  }
+
+  open fun afterRebuild() {
+    myContentPanel.revalidate()
+  }
+
+  abstract fun extractParseResult(parseResult: ParseResult)
+
+  abstract fun getRegistersHolder(): T
+
+  abstract fun getHeaderForm(): BaseFilterForm<T>?
+
+  open fun tableModelProvider(registerCellContainers: List<RegisterCellContainer>): () -> RegDebugRegisterTableModel {
+    return {
+      RegDebugRegisterTableModel(registerCellContainers, numberOfColumns())
+    }
+  }
+
+  private fun updateCells(registerHolder: RegistersHolder<*>) {
+    for (registerCellContainer in registerCellContainers) {
+      registerCellContainer.updateCell(
+        registerHolder.findRegister(registerCellContainer.myRegisterName) ?: continue
+      )
+    }
+  }
+
+  private fun addCellsToPanel() {
+    val registersToView = getRegistersToView()
+    val numberOfColumns = numberOfTables()
+
+    val filteredRegisters = this.registerCellContainers.filter {
+      registersToView.isEmpty() || registersToView.contains(it.myRegisterName)
     }
 
-    open fun addActions() {
-        val actionManager = ActionManager.getInstance()
-        for (registerCellContainer in registerCellContainers) {
-            DataManager.registerDataProvider(registerCellContainer.getHexTextField()) { dataId ->
-                when {
-                    PlatformDataKeys.COPY_PROVIDER.name == dataId -> {
-                        RegisterCopyProvider(registerCellContainer.myCell)
-                    }
-                    DataKeys.registerCellContainer.name == dataId -> {
-                        registerCellContainer
-                    }
-                    else -> {
-                        null
-                    }
-                }
-            }
-
-            registerCellContainer.getHexTextField().addMouseListener(
-                object : PopupHandler() {
-                    override fun invokePopup(comp: Component, x: Int, y: Int) {
-                        val group = actionManager.getAction(getActionGroupId()) as? ActionGroup ?: return
-                        actionManager.createActionPopupMenu(getPopupPlace(), group).component.show(comp, x, y)
-                    }
-                }
-            )
-        }
+    val subLists = mutableListOf<MutableList<RegisterCellContainer>>()
+    var i = 0
+    while (i < numberOfColumns) {
+      subLists.add(mutableListOf())
+      i++
     }
 
-    open fun getPopupPlace(): @NonNls String = getActionGroupId()
-
-    fun getMainPanel(): JPanel {
-        return myMainPanel
+    filteredRegisters.forEachIndexed { index, registerCellContainer ->
+      val slot = index % numberOfColumns
+      subLists[slot].add(registerCellContainer)
     }
 
-    open fun addErrorMessages(message: String?) {}
-
-    open fun initialize() {}
-
-    open fun afterRebuild() {
-        cellsPanel.revalidate()
+    subLists.forEach { l ->
+      val table = RegDebugRegisterTable(this, tableModelProvider(l)())
+      myContentPanel.add(table)
     }
+  }
 
-    abstract fun extractParseResult(parseResult: ParseResult)
-
-    abstract fun getRegistersHolder(): T
-
-    abstract fun getHeaderForm(): BaseFilterForm<T>?
-
-    private fun updateCells(registerHolder: RegistersHolder<*>) {
-        for (registerCellContainer in registerCellContainers) {
-            registerCellContainer.updateCell(
-                registerHolder.findRegister(registerCellContainer.myRegisterName) ?: continue
-            )
-        }
-    }
-
-    private fun setupCellContainers(registersHolder: RegistersHolder<*>) {
-        if (cellsSetup) return
-
-        val registers = registersHolder.registers
-        val registerCellContainers = mutableListOf<RegisterCellContainer>()
-        for (register in registers) {
-            registerCellContainers.add(RegisterCellContainer(register.registerName))
-        }
-        this.registerCellContainers = registerCellContainers
-
-        for ((i, cellContainer) in registerCellContainers.withIndex()) {
-            cellContainer.createCell(project, registers[i], getCellCreateProvider())
-        }
-
-        this.cellsSetup = true
-    }
-
-    private fun createCellPanel() {
-        this.cellsPanel = JPanel(GridLayoutManager(registerCellContainers.size, 2))
-        val scrollPane = ScrollPaneFactory.createScrollPane(cellsPanel)
-        myMainPanel.add(scrollPane, BorderLayout.CENTER)
-
-        addCellsToPanel()
-        addActions()
-    }
-
-    private fun addCellsToPanel() {
-        val registersToView = getRegistersToView()
-        var rowIdx = 0
-
-        var i = 0
-        for (rc in registerCellContainers) {
-            if (registersToView.isEmpty() || registersToView.contains(rc.myRegisterName)) {
-                val gridConstraints = GridConstraints()
-                gridConstraints.row = rowIdx
-                gridConstraints.column = i % 2
-                if (gridConstraints.column == 1) {
-                    rowIdx++
-                }
-                gridConstraints.anchor = GridConstraints.ANCHOR_WEST
-                cellsPanel.add(rc.getMainPanel(), gridConstraints, -1)
-                i++
-            }
-        }
-    }
-
-    private fun getRegistersToView(): Set<String> {
-        val text = getHeaderForm()?.getFilterTextField()?.text ?: return emptySet()
-        if (text.isEmpty()) return emptySet()
-        return text.split(',', ' ').map { it.trim() }.toSet()
-    }
+  private fun getRegistersToView(): Set<String> {
+    val text = getHeaderForm()?.getFilterTextField()?.text ?: return emptySet()
+    if (text.isEmpty()) return emptySet()
+    return text.split(',', ' ').map { it.trim() }.toSet()
+  }
 }

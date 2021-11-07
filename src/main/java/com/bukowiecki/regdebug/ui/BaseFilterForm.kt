@@ -22,7 +22,7 @@ abstract class BaseFilterForm<T : RegistersHolder<*>>(private val regDebugView: 
 
     fun initListeners() {
         val settings = getInstance(regDebugView.project)
-        getFilterTextField().text = getSettings(settings)
+        initSettings(settings)
 
         getFilterTextField().document.addDocumentListener(object : DocumentListener {
             override fun insertUpdate(e: DocumentEvent) {
@@ -42,13 +42,34 @@ abstract class BaseFilterForm<T : RegistersHolder<*>>(private val regDebugView: 
                 listener.rebuildView(getViewClass())
             }
         })
+
+        getNumberOfTablesTextField()?.document?.addDocumentListener(object : DocumentListener {
+            override fun insertUpdate(e: DocumentEvent) {
+                rebuild()
+            }
+
+            override fun removeUpdate(e: DocumentEvent) {
+                rebuild()
+            }
+
+            override fun changedUpdate(e: DocumentEvent) {
+                rebuild()
+            }
+
+            private fun rebuild() {
+                setSettings(settings)
+                listener.rebuildView(getViewClass())
+            }
+        })
     }
 
-    abstract fun getSettings(settings: RegDebugSettings): String
+    abstract fun initSettings(settings: RegDebugSettings)
 
     abstract fun setSettings(settings: RegDebugSettings)
 
     abstract fun getFilterTextField(): JTextField
 
     abstract fun getViewClass(): Class<out RegDebugView<*>>
+
+    abstract fun getNumberOfTablesTextField(): JTextField?
 }

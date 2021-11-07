@@ -17,6 +17,11 @@ object ParseUtils {
         BackendType.GDB to ' '
     )
 
+    val registerOperators = mapOf(
+        BackendType.LLDB to setOf("="),
+        BackendType.GDB to setOf("=", "-=", "+=")
+    )
+
     val flagsLabel = listOf(
         FLAGEntry("CF", FLAGCategory.S),
         FLAGEntry("", FLAGCategory.Reserved),

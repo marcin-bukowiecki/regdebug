@@ -23,6 +23,10 @@ class RegDebugSettingsPanel {
     val showExceptionStateRegisters = JBCheckBox()
     val showOtherRegisters = JBCheckBox()
     val openOnStartup = JBCheckBox()
+    val numberOfGeneralPurposeTables = JBTextField()
+    val numberOfFloatingPointTables = JBTextField()
+    val numberOfExceptionsStateTables = JBTextField()
+    val numberOfOtherTables = JBTextField()
 
     init {
         mainPanel = FormBuilder.createFormBuilder()
@@ -44,6 +48,26 @@ class RegDebugSettingsPanel {
             )
             .addLabeledComponent(
                 JBLabel(RegDebugBundle.message("regdebug.settings.openOnStartup")), openOnStartup,
+                1, false
+            )
+            .addLabeledComponent(
+                JBLabel(RegDebugBundle.message("regdebug.settings.registerLoadingTimeout")), registersLoadingTimeout,
+                1, false
+            )
+            .addLabeledComponent(
+                JBLabel(RegDebugBundle.message("regdebug.settings.generalPurposeTables")), numberOfGeneralPurposeTables,
+                1, false
+            )
+            .addLabeledComponent(
+                JBLabel(RegDebugBundle.message("regdebug.settings.floatingPointTables")), numberOfFloatingPointTables,
+                1, false
+            )
+            .addLabeledComponent(
+                JBLabel(RegDebugBundle.message("regdebug.settings.exceptionStateTables")), numberOfExceptionsStateTables,
+                1, false
+            )
+            .addLabeledComponent(
+                JBLabel(RegDebugBundle.message("regdebug.settings.openOnStartup")), numberOfOtherTables,
                 1, false
             )
             .addComponentFillVertically(JPanel(), 0)

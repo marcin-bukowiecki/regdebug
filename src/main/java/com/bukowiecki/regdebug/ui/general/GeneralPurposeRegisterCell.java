@@ -30,6 +30,12 @@ public class GeneralPurposeRegisterCell extends RegisterCellBase {
         this.infoLabel.setText(register.getInfo());
     }
 
+    @NotNull
+    @Override
+    public String getInfoText() {
+        return infoLabel.getText();
+    }
+
     @Override
     public @NotNull JTextField getHexTextField() {
         return hexTextField;
