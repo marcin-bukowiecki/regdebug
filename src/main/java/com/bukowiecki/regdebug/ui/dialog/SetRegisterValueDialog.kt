@@ -47,21 +47,7 @@ class SetRegisterValueDialog(private val registerCellContainer: RegisterCellCont
       return
     }
 
-    val hexStr: String
-    if (!value.startsWith("0x")) {
-      try {
-        hexStr = "0x" + Integer.toHexString(Integer.parseInt(value))
-      } catch (e: Exception) {
-        mainView.messageLabel.icon = AllIcons.Actions.IntentionBulb
-        mainView.messageLabel.text = "Unable to parse int"
-        return
-      }
-    } else {
-      hexStr = value
-    }
-
-    registerCellContainer.myCell.hexTextField.text = registerCellContainer.presentation.getText(hexStr)
-    debugProcess.getUserData(DataKeys.sessionTab)?.views?.forEach { it.refreshView() }
+    debugProcess.getUserData(DataKeys.debugHandler)?.handle()
     super.doOKAction()
   }
 
