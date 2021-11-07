@@ -8,10 +8,8 @@ package com.bukowiecki.regdebug.ui.general
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
-import com.bukowiecki.regdebug.ui.BaseFilterForm
-import com.bukowiecki.regdebug.ui.CellCreateProvider
-import com.bukowiecki.regdebug.ui.RegDebugView
-import com.bukowiecki.regdebug.ui.RegisterCell
+import com.bukowiecki.regdebug.settings.RegDebugSettings
+import com.bukowiecki.regdebug.ui.*
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
@@ -29,6 +27,14 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
     private lateinit var myGeneralPurposeRegisters: GeneralPurposeRegisters
 
     private val myHeaderForm = GeneralPurposeRegistersHeaderForm(this)
+
+    override fun numberOfColumns(): Int {
+        return 3
+    }
+
+    override fun numberOfTables(): Int {
+        return RegDebugSettings.getInstance(project).numberOfGeneralPurposeTables
+    }
 
     override fun rebuildView(parseResult: ParseResult) {
         myHeaderForm.statusLabel.text = "Loading registers..."
@@ -49,7 +55,7 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
 
         myHeaderForm.statusLabel.text = ""
 
-        cellsPanel.revalidate()
+        myMainPanel.revalidate()
     }
 
     override fun extractParseResult(parseResult: ParseResult) {
@@ -87,9 +93,16 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
         myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
         myHeaderForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
         myMainPanel.add(myHeaderForm.mainPanel, BorderLayout.NORTH)
+        super.initialize()
     }
 
     override fun getHeaderForm(): BaseFilterForm<GeneralPurposeRegisters> {
         return myHeaderForm
+    }
+
+    override fun tableModelProvider(registerCellContainers: List<RegisterCellContainer>): () -> RegDebugRegisterTableModel {
+        return {
+            GeneralPurposeTableModel(registerCellContainers, numberOfColumns())
+        }
     }
 }

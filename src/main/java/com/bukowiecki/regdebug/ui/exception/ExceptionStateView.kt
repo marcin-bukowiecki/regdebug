@@ -7,6 +7,7 @@ package com.bukowiecki.regdebug.ui.exception
 
 import com.bukowiecki.regdebug.parsers.*
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
+import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.BaseFilterForm
 import com.bukowiecki.regdebug.ui.CellCreateProvider
 import com.bukowiecki.regdebug.ui.RegDebugView
@@ -22,6 +23,10 @@ import javax.swing.BorderFactory
 class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<ExceptionStateRegister>>(project), Disposable {
 
     private lateinit var myExceptionStateRegisters: RegistersHolder<ExceptionStateRegister>
+
+    override fun numberOfTables(): Int {
+        return RegDebugSettings.getInstance(project).numberOfExceptionStateTables
+    }
 
     override fun getRegistersHolder(): RegistersHolder<ExceptionStateRegister> {
         return myExceptionStateRegisters
@@ -46,6 +51,7 @@ class ExceptionStateView(project: Project) : RegDebugView<RegistersHolder<Except
 
     override fun initialize() {
         myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
+        super.initialize()
     }
 
     override fun dispose() {

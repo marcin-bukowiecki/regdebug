@@ -26,6 +26,9 @@ public class GeneralPurposeRegistersHeaderForm extends BaseFilterForm<GeneralPur
     private JPanel registerFilterPanel;
     private JLabel filterLabel;
     private JPanel flagsPanel;
+    private JPanel numberOfTablesPanel;
+    private JLabel numberOfTablesLabel;
+    private JTextField numberOfTablesTextField;
 
     public GeneralPurposeRegistersHeaderForm(RegDebugView<GeneralPurposeRegisters> regDebugView) {
         super(regDebugView);
@@ -37,6 +40,11 @@ public class GeneralPurposeRegistersHeaderForm extends BaseFilterForm<GeneralPur
         statusLabel.setText("");
 
         initListeners();
+    }
+
+    @Override
+    public @NotNull JTextField getNumberOfTablesTextField() {
+        return numberOfTablesTextField;
     }
 
     public JLabel getStatusLabel() {
@@ -59,11 +67,19 @@ public class GeneralPurposeRegistersHeaderForm extends BaseFilterForm<GeneralPur
     @Override
     public void setSettings(@NotNull RegDebugSettings settings) {
         settings.setGeneralRegistersToSelect(filterTextField.getText());
+        try {
+            int i = Integer.parseInt(numberOfTablesTextField.getText());
+            if (i > 10) {
+                i = 10;
+            }
+            settings.setNumberOfGeneralPurposeTables(i);
+        } catch (NumberFormatException ignored) { }
     }
 
     @Override
-    public @NotNull String getSettings(@NotNull RegDebugSettings settings) {
-        return settings.getGeneralRegistersToSelect();
+    public void initSettings(@NotNull RegDebugSettings settings) {
+        getFilterTextField().setText(settings.getGeneralRegistersToSelect());
+        getNumberOfTablesTextField().setText(String.valueOf(settings.getNumberOfGeneralPurposeTables()));
     }
 
     @NotNull

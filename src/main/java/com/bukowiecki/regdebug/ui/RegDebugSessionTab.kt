@@ -5,8 +5,7 @@
 
 package com.bukowiecki.regdebug.ui
 
-import com.bukowiecki.regdebug.backend.gdb.GDBDebugHandler
-import com.bukowiecki.regdebug.backend.lldb.LLDBDebugHandler
+import com.bukowiecki.regdebug.backend.DebugHandler
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
 import com.bukowiecki.regdebug.listeners.RegDebugListener
 import com.bukowiecki.regdebug.settings.RegDebugSettings
@@ -25,8 +24,6 @@ import com.intellij.openapi.util.Disposer
 import com.intellij.ui.content.Content
 import com.intellij.util.messages.Topic
 import com.jetbrains.cidr.execution.debugger.CidrDebugProcess
-import com.jetbrains.cidr.execution.debugger.backend.gdb.GDBDriver
-import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriver
 import java.util.concurrent.atomic.AtomicLong
 
 const val tabId = 2000
@@ -35,7 +32,7 @@ const val RegistersContentId = "RegistersContentId"
 /**
  * @author Marcin Bukowiecki
  */
-class RegDebugSessionTab(private val debugProcess: CidrDebugProcess) : Disposable {
+class RegDebugSessionTab(debugProcess: CidrDebugProcess) : Disposable {
 
     private lateinit var generalPurposeView: GeneralPurposeView
     private lateinit var floatingPointView: FloatingPointView
@@ -71,23 +68,9 @@ class RegDebugSessionTab(private val debugProcess: CidrDebugProcess) : Disposabl
         })
     }
 
-    fun rebuildViews() {
+    fun rebuildViews(handler: DebugHandler) {
         ApplicationManager.getApplication().invokeLater {
-            when (val driverInTests = debugProcess.driverInTests) {
-                is LLDBDriver -> {
-                    LLDBDebugHandler(this, driverInTests).handle()
-                }
-                is GDBDriver -> {
-                    GDBDebugHandler(this, driverInTests).handle()
-                }
-                else -> {
-                    if (driverInTests == null || driverInTests.javaClass.canonicalName == null) {
-                        log.info("Debug process driver is null")
-                    } else {
-                        log.info("Debug process driver: ${driverInTests.javaClass.canonicalName} is not supported")
-                    }
-                }
-            }
+            handler.handle()
         }
     }
 

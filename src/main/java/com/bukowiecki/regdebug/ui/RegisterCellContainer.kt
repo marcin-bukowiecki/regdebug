@@ -15,7 +15,7 @@ import java.awt.Color
 import javax.swing.JPanel
 import javax.swing.JTextField
 
-val backgroundColor = Color(50, 89, 61)
+val backgroundColor = Color(28, 166, 61)
 
 /**
  * @author Marcin Bukowiecki
@@ -38,11 +38,9 @@ class RegisterCellContainer(val myRegisterName: String) {
 
         val registerLabel = this.myCell.registerLabel
         if (myText != null && myText != register.hex) {
-            registerLabel.background = backgroundColor
-            registerLabel.isOpaque = true
+            registerLabel.foreground = backgroundColor
         } else {
-            registerLabel.background = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultBackground
-            registerLabel.isOpaque = false
+            registerLabel.foreground = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultForeground
         }
         registerLabel.revalidate()
         this.myText = register.hex

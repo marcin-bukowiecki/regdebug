@@ -13,7 +13,11 @@ import com.bukowiecki.regdebug.parsers.Register
 class IntegerPresentation : RegisterPresentation {
 
     override fun getText(register: Register): String {
-        val asLong = java.lang.Long.decode(register.hex)
+        return getText(register.hex)
+    }
+
+    override fun getText(hex: String): String {
+        val asLong = java.lang.Long.decode(hex)
         return asLong.toString()
     }
 

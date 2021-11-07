@@ -20,7 +20,7 @@ abstract class BaseDebugHandler(protected val sessionTab: RegDebugSessionTab) : 
     protected val executionId: Long = sessionTab.executionId.incrementAndGet()
     protected var request: Protocol.CompositeRequest? = null
 
-    protected fun handleError(e: Exception) {
+    protected fun handleError(e: Throwable) {
         if (sessionTab.executionId.get() == executionId) {
             synchronized(sessionTab) {
                 if (sessionTab.executionId.get() == executionId) {

@@ -5,6 +5,7 @@
 
 package com.bukowiecki.regdebug.utils
 
+import com.bukowiecki.regdebug.backend.DebugHandler
 import com.bukowiecki.regdebug.ui.RegDebugSessionTab
 import com.bukowiecki.regdebug.ui.RegisterCellContainer
 import com.intellij.openapi.actionSystem.DataKey
@@ -17,4 +18,5 @@ object DataKeys {
 
     val registerCellContainer = DataKey.create<RegisterCellContainer>("RegDebug.registerCellContainer")
     val sessionTab = Key.create<RegDebugSessionTab>("RegDebug.sessionTab")
+    val debugHandler = Key.create<DebugHandler>("RegDebug.debugHandler")
 }
