@@ -6,7 +6,10 @@
 package com.bukowiecki.regdebug.ui.general
 
 import com.bukowiecki.regdebug.bundle.RegDebugBundle
-import com.bukowiecki.regdebug.parsers.*
+import com.bukowiecki.regdebug.parsers.FLAGSParser
+import com.bukowiecki.regdebug.parsers.GeneralPurposeRegisters
+import com.bukowiecki.regdebug.parsers.ParseResult
+import com.bukowiecki.regdebug.parsers.Register
 import com.bukowiecki.regdebug.presentation.RegisterPresentation
 import com.bukowiecki.regdebug.settings.RegDebugSettings
 import com.bukowiecki.regdebug.ui.*
@@ -15,9 +18,12 @@ import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.util.Disposer
 import com.intellij.ui.JBColor
+import com.intellij.util.ui.components.BorderLayoutPanel
 import java.awt.BorderLayout
 import java.awt.Color
-import javax.swing.BorderFactory
+import java.awt.Dimension
+import javax.swing.JLabel
+import javax.swing.JTextField
 
 /**
  * @author Marcin Bukowiecki
@@ -26,7 +32,20 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
 
     private lateinit var myGeneralPurposeRegisters: GeneralPurposeRegisters
 
-    private val myHeaderForm = GeneralPurposeRegistersHeaderForm(this)
+    private val flagsTextField = JTextField()
+
+    init {
+        flagsTextField.isEnabled = false
+        val flagsPanel = BorderLayoutPanel()
+        flagsPanel.add(JLabel(RegDebugBundle.message("regdebug.flags")), BorderLayout.WEST)
+        flagsTextField.columns = 30
+        flagsPanel.add(flagsTextField, BorderLayout.CENTER)
+        toolboxPanel.add(flagsPanel, BorderLayout.EAST)
+    }
+
+    override fun getViewClass(): Class<*> {
+        return GeneralPurposeView::class.java
+    }
 
     override fun numberOfColumns(): Int {
         return 3
@@ -37,8 +56,8 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
     }
 
     override fun rebuildView(parseResult: ParseResult) {
-        myHeaderForm.statusLabel.text = "Loading registers..."
-        myHeaderForm.statusLabel.foreground = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultForeground
+        statusLabel.text = "Loading registers..."
+        statusLabel.foreground = EditorColorsManager.getInstance().schemeForCurrentUITheme.defaultForeground
         super.rebuildView(parseResult)
     }
 
@@ -50,11 +69,9 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
             } else {
                 flagsParsed.joinToString(", ") { entry -> entry.symbol }
             }
-            myHeaderForm.flagsTextField.text = content
+            flagsTextField.text = content
         }
-
-        myHeaderForm.statusLabel.text = ""
-
+        statusLabel.text = ""
         myMainPanel.revalidate()
     }
 
@@ -80,29 +97,35 @@ class GeneralPurposeView(project: Project) : RegDebugView<GeneralPurposeRegister
     }
 
     override fun addErrorMessages(message: String?) {
-        myHeaderForm.statusLabel.text = RegDebugBundle.message("regdebug.error", message ?: "")
+        statusLabel.text = RegDebugBundle.message("regdebug.error", message ?: "")
         val errorColor = JBColor(Color(188, 63, 60), Color(188, 63, 60))
-        myHeaderForm.statusLabel.foreground = errorColor
+        statusLabel.foreground = errorColor
     }
 
     override fun getActionGroupId(): String {
         return "RegDebug.GeneralPurposeRegisters"
     }
 
-    override fun initialize() {
-        myMainPanel.border = BorderFactory.createEmptyBorder(15, 15, 15, 15)
-        myHeaderForm.mainPanel.border = BorderFactory.createEmptyBorder(0, 0, 5, 0)
-        myMainPanel.add(myHeaderForm.mainPanel, BorderLayout.NORTH)
-        super.initialize()
-    }
-
-    override fun getHeaderForm(): BaseFilterForm<GeneralPurposeRegisters> {
-        return myHeaderForm
-    }
-
     override fun tableModelProvider(registerCellContainers: List<RegisterCellContainer>): () -> RegDebugRegisterTableModel {
         return {
             GeneralPurposeTableModel(registerCellContainers, numberOfColumns())
+        }
+    }
+
+    override fun loadSettings(settings: RegDebugSettings) {
+        filterTextField.text = settings.generalRegistersToSelect
+        registerGroupsTextField.text = settings.numberOfGeneralPurposeTables.toString()
+    }
+
+    override fun updateSettings(settings: RegDebugSettings) {
+        settings.generalRegistersToSelect = filterTextField.text
+        try {
+            var i: Int = registerGroupsTextField.text.toInt()
+            if (i > 10) {
+                i = 10
+            }
+            settings.numberOfGeneralPurposeTables = i
+        } catch (ignored: NumberFormatException) {
         }
     }
 }

@@ -90,7 +90,11 @@ class RegistersParserTest {
         """.trimIndent()
 
         val result = GDBRegistersParser.parseFloatingPointRegisters(floatGroup)
-
+        Assert.assertNotNull(result)
+        Assert.assertEquals(FloatingPointRegister(
+          "fop",
+          "0x0",
+          ""), result.registers.last())
     }
 
     @Test
