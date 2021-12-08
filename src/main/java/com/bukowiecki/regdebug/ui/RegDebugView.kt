@@ -14,7 +14,6 @@ import com.intellij.ui.ScrollPaneFactory
 import com.intellij.uiDesigner.core.GridConstraints
 import com.intellij.uiDesigner.core.GridLayoutManager
 import com.intellij.util.ui.components.BorderLayoutPanel
-import org.jetbrains.annotations.NonNls
 import java.awt.BorderLayout
 import java.awt.Dimension
 import javax.swing.*
@@ -127,7 +126,7 @@ abstract class RegDebugView<T : RegistersHolder<*>>(val project: Project) {
 
   open fun addActions() {  }
 
-  open fun getPopupPlace(): @NonNls String = getActionGroupId()
+  open fun getPopupPlace(): String = getActionGroupId()
 
   open fun numberOfTables() = 2
 
