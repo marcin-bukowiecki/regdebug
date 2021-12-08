@@ -40,7 +40,10 @@ class SetRegisterValueDialog(
       super.doOKAction()
       return
     }
-    val debugProcess = currentSession.debugProcess as? CidrDebugProcess ?: return
+    val debugProcess = currentSession.debugProcess as? CidrDebugProcess ?: kotlin.run {
+      super.doOKAction()
+      return
+    }
     val err = handler.handleSetCommand(registerName, operator, value)
     if (err != null) {
       mainView.messageLabel.icon = AllIcons.Actions.IntentionBulb
