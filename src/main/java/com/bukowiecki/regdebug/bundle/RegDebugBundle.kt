@@ -6,7 +6,6 @@
 package com.bukowiecki.regdebug.bundle
 
 import com.intellij.DynamicBundle
-import org.jetbrains.annotations.Nls
 import org.jetbrains.annotations.PropertyKey
 
 const val BUNDLE = "messages.regDebug"
@@ -16,11 +15,11 @@ const val BUNDLE = "messages.regDebug"
  */
 object RegDebugBundle : DynamicBundle(BUNDLE) {
 
-    fun message(@PropertyKey(resourceBundle = BUNDLE) key: String): @Nls String {
+    fun message(@PropertyKey(resourceBundle = BUNDLE) key: String): String {
         return getMessage(key)
     }
 
-    fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, arg1: Any): @Nls String {
+    fun message(@PropertyKey(resourceBundle = BUNDLE) key: String, arg1: Any): String {
         return getMessage(key, arg1)
     }
 }
