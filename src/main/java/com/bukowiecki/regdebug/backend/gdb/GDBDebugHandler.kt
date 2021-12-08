@@ -15,6 +15,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.jetbrains.cidr.execution.debugger.backend.gdb.GDBDriver
 import kotlinx.coroutines.async
 import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.supervisorScope
 import kotlinx.coroutines.withTimeout
 
 /**
@@ -48,15 +49,21 @@ class GDBDebugHandler(sessionTab: RegDebugSessionTab,
         var floatingPointRegisters = FloatingPointRegisters.empty
         var otherRegistersAccumulator = emptyList<OtherRegister>()
         val groupsContent = runBlocking {
-            withTimeout(timeout * 1000) {
-                try {
-                    async {
-                        driver.executeInterpreterCommand(getGroupsCommand)
-                    }.blockingGet()
-                } catch (t: Throwable) {
-                    log.info("Exception while executing GDB command: $getGroupsCommand", t)
-                    handleError(t)
-                    return@withTimeout null
+            supervisorScope {
+                withTimeout(timeout * 1000) {
+                    try {
+                        async {
+                            return@async try {
+                                driver.executeInterpreterCommand(getGroupsCommand)
+                            } catch (t: Throwable) {
+                                handleError(t)
+                                null
+                            }
+                        }.blockingGet()
+                    } catch (t: Throwable) {
+                        handleError(t)
+                        return@withTimeout null
+                    }
                 }
             }
         } ?: return
@@ -108,6 +115,11 @@ class GDBDebugHandler(sessionTab: RegDebugSessionTab,
                 }
             }
         }
+    }
+
+    override fun handleError(t: Throwable) {
+        log.info("Exception while executing GDB command: $getGroupsCommand", t)
+        super.handleError(t)
     }
 
     companion object {
