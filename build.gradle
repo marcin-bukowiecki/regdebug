@@ -1,29 +1,30 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.7.3'
-    id 'org.jetbrains.kotlin.jvm' version '1.5.31'
+    id 'org.jetbrains.intellij' version '1.5.3'
+    id 'org.jetbrains.kotlin.jvm' version '1.6.0'
 }
 
 group 'com.bukowiecki.regdebug'
-version '1.2.3'
+version '2.2.1'
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.5.31'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.1'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.1'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.7.10'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.9.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.9.0'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2021.3'
-    type 'CL'
-    plugins "com.intellij.clion"
+    version = '2022.2.1'
+    type = 'CL'
+    plugins = ["com.intellij.clion"]
+    updateSinceUntilBuild = false
 }
 
 patchPluginXml {
-    changeNotes(project.file('change-notes.html').text)
+    changeNotes  = project.file('change-notes.html').text
 }
