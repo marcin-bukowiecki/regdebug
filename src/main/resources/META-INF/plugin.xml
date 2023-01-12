@@ -1,4 +1,5 @@
 <idea-plugin>
+    <idea-version since-build="211.7442"/>
     <id>com.bukowiecki.regdebug</id>
     <name>RegDebug</name>
     <vendor email="m.bukowiecki0407@gmail.com" url="https://github.com/marcin-bukowiecki">Marcin Bukowiecki</vendor>

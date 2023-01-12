@@ -32,7 +32,6 @@ import com.jetbrains.cidr.execution.debugger.backend.lldb.LLDBDriver
  */
 class ProjectOpened : StartupActivity {
 
-    @Suppress("UnstableApiUsage")
     override fun runActivity(project: Project) {
         val simpleConnect = project.messageBus.connect()
         Disposer.register(project, simpleConnect)
